@@ -11,6 +11,22 @@ Every semester there are ~20 new members who need to be entered into the system,
 
 This information will be used to populate important choir documents. For example: nametags for each member with name, section, and pronouns; email lists based on section and role; concert programs with name and section; and statistics collection for grant applications.
 
+### Spreadsheet Structure
+
+The data will be kept in an excel spreadsheet. This spreadsheet will have two sheets, one for active members and one for inactive members. Both sheets will have 8 columns:
+* Name (ex: First, Last)
+* Member ID (ex: 001)
+* Pronouns (ex: they/them)
+* Voice Part (ex: B1)
+* Role (ex: Section Leader)
+* Email (ex: user@example.com)
+* Phone (ex: (215) 555-1234)
+* Address (ex: 123 Main St, Philadelphia PA 00000)
+
+The program will use `openpyxl` to collect and edit the information in this spreadsheet. Using the `Data Class`, the program will parse the information in the xl sheet and use it to populate a dictionary, which will allow the program to collect the information from the excel spreadsheet.
+
+The spreadsheet will also include a "date modified" field.
+
 ### Member Addition
 
 When a new member joins VOP, there is information that must be collected about this new member to be stored in the membership database:
@@ -24,7 +40,7 @@ When a new member joins VOP, there is information that must be collected about t
 
 The goal of this application is to make entering the information for each new member a quick and easy process by prompting the user for each of these fields and checking for the validity of each entry. A stretch goal for this application is to have this registration form sent out to each new member for them to fill out on their own.
 
-### Memberhsip ID
+### Member ID
 
 Under the current conditions, in order to keep track of music, each member is currently hand-assigned a "folder number", which is then hand-written on each folder and distributed one-by-one to each member during the first few rehearsals. This process takes a long time, and is very prone to user error. Everyone's numbers are liable to change every semester, and the membership leaders are keeping the score of which numbers are in use or not in their heads. 
 
@@ -34,7 +50,7 @@ The goal of this application is to generate a unique member ID to each new membe
 
 Each semester a certain number of members leave the choir temporarily or permanently. Many members return after one or several semesters on leave and wish to be reinstated.
 
-The goal of this application is to make the suspension of members going on leave simple by issuing one or two commands. The change should be reflected in the database not as a deletion but as a suspension, keeping the application from populating choir documents with suspended member information. This should make it easy to keep track of unique member IDs, as well as ease the transition back into active membership after going on leave for one or more semesters.
+The goal of this application is to make the suspension of members going on leave simple by issuing one or two commands. This will be reflected in the spreadsheet by moving the Inactive Member from the Active Members sheet to the Inactive Members sheet, keeping the application from populating choir documents with suspended member information. This should make it easy to keep track of unique member IDs, as well as ease the transition back into active membership after going on leave for one or more semesters.
 
 ### Member Information Change
 
@@ -52,10 +68,11 @@ A future goal of this application is to create a user account for each new membe
 
 ## Goal Outline
 
-Basic goals:
+### Basic goals:
 * get input on new member name, pronoun, section, role, email, phone, address
 * generate a member ID
-* output to a master spreadsheet/db of all members
+* output to a master spreadsheet of all members
+    * 2 sheets: active members, inactive members
 * be able to edit members in existing db
 * print a nametag with name, section, and pronouns
 * print a label sheet with member ID
@@ -64,10 +81,24 @@ Basic goals:
 * lock application behind a username and password
 
 
-Future goals:
+### Future goals:
 * GUI front-end for user input
 * integrate with google api to output to google drive/sheets   
 * accept user input with google forms to allow for registration individually
 * allow each member to have their own account to access the database
     * each member will be able to add or modify their own information 
     * ensure that everyone can change their own info but no one else's, nor has access to other's confidential information
+
+## Functions
+
+* `openpyxl`
+* add members to spreadsheet
+    * generate unique member ID
+* change member info
+* move members from "active" to "inactive"
+* generate material from spreadsheet
+    * welcome email
+    * nametags of new members
+    * label sheet with member ID
+    * information update email
+    * mailing lists by section and role
