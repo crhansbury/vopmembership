@@ -55,7 +55,3 @@ def main():
     member into the spreadsheet, change member information, 
     make a member inactive, or query the spreadsheet for information"""
     pass
-
-active_member = create_active_members("vopmembership_data.xlsx")
-for member in active_member:
-    print(member.pronouns)
