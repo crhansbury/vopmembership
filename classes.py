@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Member:
-    id: int
+    id: str
     first_name: str
     last_name: str
     pronouns: str

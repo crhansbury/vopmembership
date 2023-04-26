@@ -20,10 +20,6 @@ def query_inactive_member(file, attribute):
         member_list.append(attr_value)
     return member_list
 
-    
-value = query_inactive_member("vopmembership_data.xlsx", "pronouns")
-print(value)
-
 
     
 
