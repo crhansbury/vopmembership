@@ -15,19 +15,8 @@ def create_member_id(file):
     active_member_id_list = query_active_member(file, "id")
     inactive_member_id_list = query_inactive_member(file, "id")
     id_list = [int(i) for i in active_member_id_list + inactive_member_id_list]
-    # Initializing smallest number and iterating over list to find the next 
-    # largest number that isn't in the list already
-    min_num = 1
-    new_id = 1
-    for number in id_list:
-        if number == min_num:
-            min_num += 1
-        if min_num not in id_list:
-            new_id = min_num
+    # Assigning the new id number as one greater than the largest id in the
+    # spreadsheet
+    max_number = max(id_list)
+    new_id = max_number + 1
     return new_id
-
-
-
-
-filename = "vopmembership_data.xlsx"
-print(create_member_id(filename))
