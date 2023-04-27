@@ -1,4 +1,4 @@
-from vopmembership import create_active_members, create_inactive_members
+from classes import create_active_members, create_inactive_members
 
 def query_active_member(file, attribute):
     """Searches the list of active Member objects for a certain attribute, 
