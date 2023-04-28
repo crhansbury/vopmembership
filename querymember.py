@@ -2,7 +2,7 @@ from classes import create_active_members, create_inactive_members
 
 def query_active_member(file, attribute):
     """Searches the list of active Member objects for a certain attribute, 
-    returning a list of the attributes."""
+    returning a list of all the attribute values for that attribute."""
     active_members = create_active_members(file)
     member_list = []
     for member in active_members:
@@ -12,7 +12,7 @@ def query_active_member(file, attribute):
 
 def query_inactive_member(file, attribute):
     """Searches the list of inactive Member objects for a certain attribute, 
-    returning a list of the attributes."""
+    returning a list of all the attribute values for that attribute."""
     inactive_members = create_inactive_members(file)
     member_list = []
     for member in inactive_members:
@@ -20,10 +20,28 @@ def query_inactive_member(file, attribute):
         member_list.append(attr_value)
     return member_list
 
-
-    
-
-# Could use this to look up the members in the object list with the other
-# functions as well, such as updatemember and move member.
-# Could also use to iterate over the list of member ID numbers to make a new
-# member ID that is unique and in sequence.
+def query_member_attr(file, attribute, value, *return_attributes):
+    """Looks for a specific attribute of a member, so one can search the file
+    for someone's last name and return the other desired attribute. Example - 
+    query_member_attr('vopmembership_data.xlsx', first_name, 'Johnson', email)
+    will return jwhite@domain.com. Takes four+ arguments - file name, the 
+    name of the attribute for the value being used to query the function, the
+    value of the search, and as many return values as desired. Outputs a list
+    of all the results that match the search, and each item of the list is
+    a list of all the requested attributes for the individual Member instances."""
+    member_list = create_active_members(file) + create_inactive_members(file)
+    result = []
+    # Iterate over each instance of Member class
+    for member in member_list:
+        # Get the queried attribute for each Member
+        attr_value = getattr(member, attribute)
+        # Find the Member whose attr matches the search
+        if attr_value == value:
+            attr_list = []
+            # Iterate over each desired return attribute parameter and append 
+            # to the list of attributes for the matched Member
+            for r_attr in return_attributes:
+                attr_list.append((getattr(member, r_attr)))
+            # Append the matched member's attrs to the result list
+            result.append(attr_list)
+    return result
