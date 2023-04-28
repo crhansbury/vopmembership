@@ -15,7 +15,7 @@ This information will be used to populate important choir documents. For example
 
 The data will be kept in an excel spreadsheet. This spreadsheet will have two sheets, one for active members and one for inactive members. Both sheets will have 8 columns:
 * Name (ex: First, Last)
-* Member ID (ex: 001)
+* Member ID (ex: 1)
 * Pronouns (ex: they/them)
 * Voice Part (ex: B1)
 * Role (ex: Section Leader)
@@ -91,14 +91,55 @@ A future goal of this application is to create a user account for each new membe
 
 ## Functions
 
+* project
+    * `main()`
+        * Prompts user for input. Asks if user would like to enter a new member into the spreadsheet, change member information, make a member inactive, or query the spreadsheet for information.
+* classes
+    * `create_active_members()`
+        * Creates a list using the information from the spreadsheet of all active members. Returns a list of each member on the spreadsheet as an instance of the Member dataclass, which includes all of the information from the columns in the spreadsheet.
+    * `create_inactive_members()`
+        * Creates a list using the information from the spreadsheet of all inactive members. Returns a list of each member on the spreadsheet as an instance of the Member dataclass, which includes all of the information from the columns in the spreadsheet.
+* querymember
+    * `query_active_member()`
+        * Searches the list of active Member objects for a certain attribute, returning a list of all the attribute values for that attribute.
+    * `query_inactive_member()`
+        * Searches the list of inactive Member objects for a certain attribute, returning a list of all the attribute values for that attribute.
+    * `query_member_attr()`
+        * Looks for a specific attribute of a member, so one can search the file for someone's last name and return the other desired attribute. Example - query_member_attr('vopmembership_data.xlsx', first_name, 'Johnson', email) will return jwhite@domain.com. Takes four+ arguments - file name, the name of the attribute for the value being used to query the function, the value of the search, and as many return values as desired. Outputs a list of all the results that match the search, and each item of the list is a list of all the requested attributes for the individual Member instances.
+* newmember
+    * `add_member()`
+        * Adds a member to the spreadsheet. Takes criteria for: name, pronouns, voice part, role, email address, phone number, and  mailing address. Appends spreadsheet with this information. Updates a field that indicates the date of the latest update.
+    * `create_member_id()`
+        * Creates a unique Member ID. Checks over every existing Member ID in spreadsheet (both active and inactive) and generates a new, sequential ID that does not already exist.
+* emails
+    * `send_email()`
+        * Sends an email to a member in the spreadsheet. Planning to use for update confirmations, semesterly prompts for updates, new member welcome email.
+    * `new_member_email_template()`
+        * Fills in an existing template for a new member email with the new member's name, section, and section leader, creating a new file with the body of the email.
+* updatemember
+    * `update_member()`
+        * Updates the member information in the spreadsheet. Prompts user for: name, pronouns, voice part, role, email address, phone number, or mailing address.
+    * `inactive_member()`
+        * Moves a member from the Active Member sheet to the Inactive Member sheet.
+    * `active_member()`
+        * Moves a member from the Inactive Member sheet to the Active Member sheet.
+* material
+    * `label_sheet()`
+        * Creates a label sheet with the name and Member ID of a member.
+    * `name_tag()`
+        * Creates a nametag with the name, pronouns, and section of a member.
+
+### Modules and Libraries
+
 * `openpyxl`
-* add members to spreadsheet
-    * generate unique member ID
-* change member info
-* move members from "active" to "inactive"
-* generate material from spreadsheet
-    * welcome email
-    * nametags of new members
-    * label sheet with member ID
-    * information update email
-    * mailing lists by section and role
+* `dataclass`
+
+## Sources
+
+Pregueiro, Pedro. "A Guide to Excel Spreadsheets in Python with openpyxl". https://realpython.com/openpyxl-excel-spreadsheets-python/#importing-data-from-a-spreadsheet. 2019, Aug 26
+
+The PyCoach. "How to Easily Automate Emails with Python." https://towardsdatascience.com/how-to-easily-automate-emails-with-python-8b476045c151. 2022, Jun 8.
+
+Unkonwn. "5 Examples of Write/Append Data to Excel Using openpyxl". https://www.excel-learn.com/append-data-openpyxl/#:~:text=For%20appending%20at%20the%20end,with%20our%20sample%20excel%20file.
+
+OpenAI. ChatGPT. https://openai.com. 2023.
