@@ -1,15 +1,41 @@
 from querymember import query_active_member, query_inactive_member
+from openpyxl import load_workbook
+from datetime import datetime
 
-def add_member():
-    """Adds a member to the spreadsheet. Prompts for input for:
+def add_member(file):
+    """Adds a member to the spreadsheet. Takes criteria for:
     name, pronouns, voice part, role, email address, phone number, and 
-    mailing address. Appends spreadsheet with this information."""
-    pass
+    mailing address. Appends spreadsheet with this information. Updates
+    a field that indicates the date of the latest update."""
+    first_name = input("First Name: ")
+    last_name = input("Last Name: ")
+    pronouns = input("Pronouns: ")
+    section = input("Section: ")
+    role = input("Role: ")
+    email = input("Email: ")
+    phone = input("Phone Number: ")
+    address = input("Street Address: ")
+    city = input("City: ")
+    state = input("State: ")
+    zipcode = input("Zip Code: ")
+    member_id = create_member_id(file)
+    workbook = load_workbook(filename=file)
+    sheet = workbook["Active Members"]
+    rows = (
+        last_name,first_name,pronouns,section,member_id,role,address,city, \
+        state,zipcode,phone,email
+    )
+    sheet.append(rows)
+    # Adding the date modified
+    date = datetime.now()
+    sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m-%d-%Y"), date.strftime("%H:%M"))
+    workbook.save(file)
+
 
 def create_member_id(file):
-    """Creates a unique 3-digit Member ID. Checks over every existing 
-    Member ID in spreadsheet (both active and inactive) and generates a new ID
-    that does not already exist."""
+    """Creates a unique Member ID. Checks over every existing 
+    Member ID in spreadsheet (both active and inactive) and generates a new, 
+    sequential ID that does not already exist."""
     # Creating and concatenating the lists of member IDs from both active
     # and inactive member sheets
     active_member_id_list = query_active_member(file, "id")
