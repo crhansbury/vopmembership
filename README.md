@@ -141,6 +141,8 @@ Pregueiro, Pedro. "A Guide to Excel Spreadsheets in Python with openpyxl". https
 
 The PyCoach. "How to Easily Automate Emails with Python." https://towardsdatascience.com/how-to-easily-automate-emails-with-python-8b476045c151. 2022, Jun 8.
 
+The PyCoach. "How to Hide Passwords and Secret Keys in Your Python Scripts." https://medium.com/geekculture/how-to-hide-passwords-and-secret-keys-in-your-python-scripts-a8904d5560ec. 2022, May 26.
+
 Unkonwn. "5 Examples of Write/Append Data to Excel Using openpyxl". https://www.excel-learn.com/append-data-openpyxl/#:~:text=For%20appending%20at%20the%20end,with%20our%20sample%20excel%20file.
 
 OpenAI. ChatGPT. https://openai.com. 2023.

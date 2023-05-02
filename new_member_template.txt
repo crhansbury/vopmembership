@@ -1,0 +1,19 @@
+Dear {first_name},
+
+Welcome to VOP! We are so excited for you to join us this semester. You will be singing with us in the {section} section, and your section leader will be {sec_first} {sec_last}. Please reach out to them if you have any questions!
+
+Just to ensure we have all your information correct, please review the following:
+
+Name: {first_name} {last_name}
+Pronouns: {pronouns}
+Section: {section}
+Member ID: {id}
+Email: {email}
+Phone Number: {phone}
+Address: {address}, {city} {state} {zipcode}
+
+If anything is incorrect please reply to this email. 
+We look forward to seeing you at our first rehearsal!
+
+Best,
+VOP Membership team
