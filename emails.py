@@ -52,9 +52,8 @@ def new_member_email(template, receiver_email, spreadsheet):
     nma_str = [str(i) for i in new_mem_attributes[0]]
     # Retrieving information about all section leaders from the spreadshet
     sec_leader_attributes = query_member_attr(spreadsheet, "role", "Section leader", \
-                                            "section", "first_name", "last_name")
+                                            "section", "first_name", "last_name", "email")
     # Finding the section leader for the new member's section
-    
     section_leader = []
     for list in sec_leader_attributes:
         new_section = nma_str[3]
@@ -76,5 +75,6 @@ def new_member_email(template, receiver_email, spreadsheet):
                                         state=nma_str[8], \
                                         zipcode=nma_str[9], \
                                         sec_first=section_leader[1], \
-                                        sec_last=section_leader[2])
+                                        sec_last=section_leader[2], \
+                                        sec_email=section_leader[3])
     return subject, email_body

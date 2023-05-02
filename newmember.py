@@ -1,6 +1,7 @@
 from querymember import query_active_member, query_inactive_member
 from openpyxl import load_workbook
 from datetime import datetime
+from emails import new_member_email, send_email
 
 def add_member(file):
     """Adds a member to the spreadsheet. Takes criteria for:
@@ -30,6 +31,9 @@ def add_member(file):
     date = datetime.now()
     sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m-%d-%Y"), date.strftime("%H:%M"))
     workbook.save(file)
+    print("{} {} successfully added to {}.".format(first_name, last_name, file))
+    subject, body = new_member_email("new_member_template.txt", email, file)
+    send_email(email, subject, body)
 
 
 def create_member_id(file):
@@ -46,3 +50,5 @@ def create_member_id(file):
     max_number = max(id_list)
     new_id = max_number + 1
     return new_id
+
+add_member("vopmembership_data 3.xlsx")
