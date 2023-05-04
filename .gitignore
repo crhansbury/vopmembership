@@ -16,6 +16,6 @@ change_email_script.py
 
 __pycache__
 
-# Ignore the .DStore file
+# Ignore the .DS_store file
 
-.DStore
+.DS_store
