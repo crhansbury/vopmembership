@@ -1,11 +1,6 @@
-# Ignore test scripts for emails
+# Ignore scripts built for testing and/or modifying the xl spreadsheets
 
-email_test.py
-email_test_2.py
-
-# Ignore script built to change the spreadsheet emails to add the test email created for this project
-
-change_email_script.py
+ignored_scripts/
 
 #Ignore various excel spreadsheet files being used to test the functions (may change later to allow for the final example xl spreadsheet)
 
