@@ -1,0 +1,21 @@
+# Ignore test scripts for emails
+
+email_test.py
+email_test_2.py
+
+# Ignore script built to change the spreadsheet emails to add the test email created for this project
+
+change_email_script.py
+
+#Ignore various excel spreadsheet files being used to test the functions (may change later to allow for the final example xl spreadsheet)
+
+*.xlsx
+*.numbers
+
+# Ignore the cache file
+
+__pycache__
+
+# Ignore the .DStore file
+
+.DStore
