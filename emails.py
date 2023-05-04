@@ -149,7 +149,3 @@ def active_member_email(template, receiver_email, spreadsheet):
                                         sec_last=section_leader[2], \
                                         sec_email=section_leader[3])
     return subject, email_body
-
-# subject, body = active_member_email("active_member_template.txt", "vopmembershiptest+vfaulkner@gmail.com", "vopmembership_data 3.xlsx")
-# print(subject)
-# print(body)

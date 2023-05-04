@@ -9,7 +9,9 @@ def inactive_member():
     sheet."""
     pass
 
-def active_member():
+def active_member(file, mem_attr, mem_attr_value):
     """Moves a member from the Inactive Member sheet to the Active Member 
-    sheet."""
+    sheet. Takes the argument of a member attribute and value, and looks
+    up that member. Copies the member over from the Inactive sheet to the 
+    Active sheet."""
     pass

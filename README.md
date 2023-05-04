@@ -143,10 +143,12 @@ The PyCoach. "How to Easily Automate Emails with Python." https://towardsdatasci
 
 The PyCoach. "How to Hide Passwords and Secret Keys in Your Python Scripts." https://medium.com/geekculture/how-to-hide-passwords-and-secret-keys-in-your-python-scripts-a8904d5560ec. 2022, May 26.
 
-Unkonwn. "5 Examples of Write/Append Data to Excel Using openpyxl". https://www.excel-learn.com/append-data-openpyxl/#:~:text=For%20appending%20at%20the%20end,with%20our%20sample%20excel%20file.
+"5 Examples of Write/Append Data to Excel Using openpyxl". https://www.excel-learn.com/append-data-openpyxl/#:~:text=For%20appending%20at%20the%20end,with%20our%20sample%20excel%20file.
 
 OpenAI. ChatGPT. https://openai.com. 2023.
 
 Grupetta, Stephen. "Using Python Optional Arguments When Defining Functions. https://realpython.com/python-optional-arguments/. 2021, Aug 30.
 
 "How to get current date and time in Python?" https://www.programiz.com/python-programming/datetime/current-datetime#:~:text=If%20we%20need%20to%20get,class%20of%20the%20datetime%20module.&text=Here%2C%20we%20have%20used%20datetime,and%20time%20in%20another%20format. 
+
+"Git Ignore and .gitignore". https://www.w3schools.com/git/git_ignore.asp?remote=github. 
