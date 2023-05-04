@@ -8,6 +8,7 @@ def add_member(file):
     name, pronouns, voice part, role, email address, phone number, and 
     mailing address. Appends spreadsheet with this information. Updates
     a field that indicates the date of the latest update."""
+    # Prompt the user for info
     first_name = input("First Name: ")
     last_name = input("Last Name: ")
     pronouns = input("Pronouns: ")
@@ -19,7 +20,9 @@ def add_member(file):
     city = input("City: ")
     state = input("State: ")
     zipcode = input("Zip Code: ")
+    # Generate new member ID
     member_id = create_member_id(file)
+    # Open the workbook and load the "Active Member" sheet and append info
     workbook = load_workbook(filename=file)
     sheet = workbook["Active Members"]
     rows = (
@@ -29,9 +32,12 @@ def add_member(file):
     sheet.append(rows)
     # Adding the date modified
     date = datetime.now()
-    sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m-%d-%Y"), date.strftime("%H:%M"))
+    sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"), \
+                                                   date.strftime("%H:%M"))
     workbook.save(file)
     print("{} {} successfully added to {}.".format(first_name, last_name, file))
+    # Generating and sending welcome email once new member has been successfully
+    # appended to spreadsheet
     subject, body = new_member_email("new_member_template.txt", email, file)
     send_email(email, subject, body)
 
