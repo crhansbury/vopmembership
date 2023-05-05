@@ -47,3 +47,14 @@ def query_member_attr(file, attribute, attr_value, *return_attributes):
             # Append the matched member's attrs to the result list
             result.append(attr_list)
     return result
+
+def query_member_object(file, attribute, attr_value):
+    """Queries the spreadsheet for a member object matching the specified 
+    attribute and returns a list of the matching objects."""
+    members = create_active_members(file) + create_inactive_members(file)
+    member_list = []
+    for member in members:
+        matching_attr = getattr(member, attribute)
+        if matching_attr == attr_value:
+            member_list.append(member)
+    return member_list
