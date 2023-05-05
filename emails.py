@@ -9,9 +9,10 @@ def mailing_list():
     # Not sure about this function, might not use it.
 
 def send_email(reciever_email, subject, body):
-    """Sends an email to a member in the spreadsheet. Planning to use for 
-    update confirmations, semesterly prompts for updates, 
-    new member welcome email"""
+    """Sends an email to the email defined in the 'reciever_email' parameter.
+    Sends from vopmembershiptest@gmail.com. Password is defined in a local
+    environment variable and cannot be retrieved outside of the test environment
+    at this time."""
     
     sender_email = "vopmembershiptest@gmail.com"
     password = os.environ.get("VOP_PASSWORD")
@@ -40,11 +41,22 @@ def send_email(reciever_email, subject, body):
 
 def generate_email(template, receiver_email, spreadsheet):
     """Returns two values: (subject, email_body). Fills in an existing template 
-    for a new member email with the new 
-    member's name, section, and section leader, creating a new file with
-    the body of the email and returning the contents of that file as a str.
-    Also returns an appropriate subject line for the email."""
-    # Retrieving the attributes from the spreadsheet for the new member
+    for an email with all of the memeber's attributes, their section leader, and
+    the section leader's email. 
+    
+    The subject is defined in the template as the first line followed by an 
+    empty line. The body includes the third line of the template to the end. 
+    
+    The variables in the template include all attributes of the member 
+    associated with the 'receiver_email' parameter passed into the function as 
+    defined in the spreadsheet file passed into the 'spreadsheet' parameter. 
+    The variables must be written in the template as: {first_name}, {last_name}, 
+    {pronouns}, {section}, {id}, {email}, {phone}, {address}, {city}, {state}, 
+    {zipcode}. Other variables inclue the section, name, and email of the 
+    section leader associated with the member's section. These variables must
+    be written in the template as: {sec_first}, {sec_last}, and {sec_email}."""
+    
+    # Retrieving the attributes from the spreadsheet for the member
     member_attributes = query_member_attr(spreadsheet, "email", receiver_email, \
                                            "first_name", "last_name", "pronouns", \
                                             "section", "id", "phone", "address", \
@@ -52,9 +64,10 @@ def generate_email(template, receiver_email, spreadsheet):
     # Turning the items in the list of attributes into strings
     mattr_string = [str(i) for i in member_attributes[0]]
     # Retrieving attributes for all section leaders from the spreadshet
-    sec_leader_attributes = query_member_attr(spreadsheet, "role", "Section leader", \
-                                            "section", "first_name", "last_name", "email")
-    # Finding the section leader for the new member's section
+    sec_leader_attributes = query_member_attr(spreadsheet, "role", \
+                                              "Section leader", "section", \
+                                              "first_name", "last_name", "email")
+    # Finding the section leader for the member's section
     section_leader = []
     for list in sec_leader_attributes:
         new_section = mattr_string[3]
@@ -80,6 +93,3 @@ def generate_email(template, receiver_email, spreadsheet):
                                         sec_last=section_leader[2], \
                                         sec_email=section_leader[3])
     return subject, email_body
-
-subject, body = generate_email("email-templates/updated_member_template.txt", "vopmembershiptest+jwhite@gmail.com", "vopmembership_data 3.xlsx")
-send_email("vopmembershiptest+jwhite@gmail.com", subject, body)
