@@ -2,6 +2,7 @@ from openpyxl import load_workbook
 from datetime import datetime
 from emails import generate_email, send_email
 from newmember import create_member_id
+from querymember import query_active_member
 
 def add_member(file):
     """Adds a member to the spreadsheet. Takes criteria for:
@@ -48,6 +49,13 @@ def add_member(file):
     except:
         print("Email to {} was unsuccessful.".format(email))
 
+def new_semester_email(spreadsheet):
+    active_emails= query_active_member(spreadsheet, "email")
+    for email in active_emails:
+        subject, body = generate_email("email-templates/semester_start_template.txt", email, \
+                                   spreadsheet)
+        send_email(email, subject, body)
+
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
     if user would like to enter a new member into the spreadsheet, 
@@ -65,10 +73,11 @@ def main(file):
             "[5] Search for an existing member\n" \
             "[6] Create a nametag for an existing member\n" \
             "[7] Create a label sheet for an existing member\n" \
-            "[8] Exit")
+            "[8] Send a new semester update email\n" \
+            "[9] Exit")
         print("------------------------------------------")
         response = input("Please enter a number from the main menu:\n")
-        if response == "8":
+        if response == "9":
             break
         elif response == "1":
             # Double check that the user made the right choice
@@ -98,6 +107,12 @@ def main(file):
             continue
         elif response == "7":
             continue
+        elif response == "8":
+            check = input("You have selected Send a new semester update email. Proceed? [y/n]\n")
+            if check == "y":
+                new_semester_email(file)
+            else:
+                continue       
         else:
             print("Not a valid response. Please enter a number from the main menu.")
             continue

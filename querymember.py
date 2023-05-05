@@ -7,7 +7,8 @@ def query_active_member(file, attribute):
     member_list = []
     for member in active_members:
         attr_value = getattr(member, attribute)
-        member_list.append(attr_value)
+        if attr_value != None:
+            member_list.append(attr_value)
     return member_list
 
 def query_inactive_member(file, attribute):
@@ -17,10 +18,11 @@ def query_inactive_member(file, attribute):
     member_list = []
     for member in inactive_members:
         attr_value = getattr(member, attribute)
-        member_list.append(attr_value)
+        if attr_value != None:
+            member_list.append(attr_value)
     return member_list
 
-def query_member_attr(file, attribute, value, *return_attributes):
+def query_member_attr(file, attribute, attr_value, *return_attributes):
     """Looks for a specific attribute of a member, so one can search the file
     for someone's last name and return the other desired attribute. Example - 
     query_member_attr('vopmembership_data.xlsx', first_name, 'Johnson', email)
@@ -34,9 +36,9 @@ def query_member_attr(file, attribute, value, *return_attributes):
     # Iterate over each instance of Member class
     for member in member_list:
         # Get the queried attribute for each Member
-        attr_value = getattr(member, attribute)
+        mem_attr_value = getattr(member, attribute)
         # Find the Member whose attr matches the search
-        if attr_value == value:
+        if mem_attr_value == attr_value:
             attr_list = []
             # Iterate over each desired return attribute parameter and append 
             # to the list of attributes for the matched Member

@@ -1,0 +1,20 @@
+The new semester has begun!
+
+Hi {first_name}!
+
+Welcome to a new semester with VOP! This semester you will be singing in the {section} section. Your section leader is {sec_first} {sec_last}. Please email {sec_first} at {sec_email} with any questions.
+
+Please review the following information. Reply to this email if any of your information has changed since last semester!
+
+Name: {first_name} {last_name}
+Pronouns: {pronouns}
+Section: {section}
+Member ID: {id}
+Email: {email}
+Phone Number: {phone}
+Address: {address}, {city} {state} {zipcode}
+
+Looking forward to singing with everyone again! 
+
+Best,
+VOP Membership team
