@@ -1,4 +1,5 @@
 from openpyxl import load_workbook
+from openpyxl.styles import Border, Side, Alignment
 from datetime import datetime
 from emails import generate_email, send_email
 from newmember import create_member_id
@@ -30,15 +31,25 @@ def add_member(file):
     # Open the workbook and load the "Active Member" sheet and append info
     workbook = load_workbook(filename=file)
     sheet = workbook["Active Members"]
-    rows = (
+    row = (
         last_name,first_name,pronouns,section,member_id,role,address,city, \
         state,zipcode,phone,email
     )
-    sheet.append(rows)
+    sheet.append(row)
+    # Formatting the new row to match the rest of the spreadsheet
+    thin_border = Border(left=Side(style='thin'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+    alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
+    new_row = sheet.max_row
+    for cell in sheet[new_row]:
+        cell.border = thin_border
+        cell.alignment = alignment
     # Adding the date modified
     date = datetime.now()
-    sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"), \
-                                                date.strftime("%H:%M"))
+    sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"),
+                                                   date.strftime("%H:%M"))
     workbook.save(file)
     print("{} {} successfully added to {}.".format(first_name, last_name, file))
     # Generating and sending welcome email once new member has been successfully
@@ -59,7 +70,6 @@ def all_active_email(template, spreadsheet):
     for email in active_emails:
         subject, body = generate_email(template, email, spreadsheet)
         send_email(email, subject, body)
-        exit()
 
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
@@ -78,7 +88,7 @@ def main(file):
             "[5] Search for an existing member\n" \
             "[6] Create a nametag for an existing member\n" \
             "[7] Create a label sheet for an existing member\n" \
-            "[8] Send a new semester update email\n" \
+            "[8] Send an email to all active members\n" \
             "[9] Exit")
         print("------------------------------------------")
         response = input("Please enter a number from the main menu:\n")
@@ -113,10 +123,15 @@ def main(file):
         elif response == "7":
             continue
         elif response == "8":
-            check = input("You have selected Send a new semester update email. Proceed? [y/n]\n")
+            check = input("You have selected Send an email to all active members. Proceed? [y/n]\n")
             if check == "y":
-                all_active_email("email-templates/semester_start_template.txt", \
-                                 file)
+                template = input("Please enter the email template file: \n")
+                try:
+                    all_active_email(template, file)
+                    continue
+                except:
+                    print("invalid file")
+                    continue
             else:
                 continue       
         else:
@@ -124,4 +139,4 @@ def main(file):
             continue
             
 if __name__ == '__main__':
-    main("vopmembership_data 3.xlsx")
+    main("vopmembership_data 4.xlsx")
