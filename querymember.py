@@ -47,3 +47,23 @@ def query_member_attr(file, attribute, attr_value, *return_attributes):
             # Append the matched member's attrs to the result list
             result.append(attr_list)
     return result
+
+def query_active_member_attr(file, attribute, attr_value, *return_attributes):
+    """Identical to query_member_attr, except this function only searches 
+    through the Active Members sheet of the file."""
+    member_list = create_active_members(file)
+    result = []
+    # Iterate over each instance of Member class
+    for member in member_list:
+        # Get the queried attribute for each Member
+        mem_attr_value = getattr(member, attribute)
+        # Find the Member whose attr matches the search
+        if mem_attr_value == attr_value:
+            attr_list = []
+            # Iterate over each desired return attribute parameter and append 
+            # to the list of attributes for the matched Member
+            for r_attr in return_attributes:
+                attr_list.append((getattr(member, r_attr)))
+            # Append the matched member's attrs to the result list
+            result.append(attr_list)
+    return result

@@ -2,7 +2,7 @@ from openpyxl import load_workbook
 from datetime import datetime
 from emails import generate_email, send_email
 from newmember import create_member_id
-from querymember import query_active_member
+from querymember import query_active_member_attr
 
 def add_member(file):
     """Adds a member to the spreadsheet. Takes criteria for:
@@ -49,17 +49,22 @@ def add_member(file):
     except:
         print("Email to {} was unsuccessful.".format(email))
 
-def all_active_email(template, spreadsheet):
-    """Sends an email to every member in the Active Members sheet of the 
-    spreadsheet passed into the 'spreadsheet' parameter. Uses the email
-    template passed into the 'template' parameter."""
+def mailinglist_email(template, spreadsheet, attribute, attr_value):
+    """Ideally: sends an email to a certain specified group of memebrs
+    in the active members sheet. could send to all emails, just section
+    leaders, just people with roles, or just people in a certain section."""
+# Ok I cannot figure out how to be able to send emails to everyone AND to only
+# a section or group. This is possbily beyond the scope of the project right now.
+# Might come back to it later.
+
+    active_members = query_active_member_attr(spreadsheet, attribute, attr_value)
     # Make a lsit of all emails from the Active Members sheet
-    active_emails= query_active_member(spreadsheet, "email")
+    # active_emails= query_active_member(spreadsheet, "email")
     # Send an email to each email in list
-    for email in active_emails:
-        subject, body = generate_email(template, email, spreadsheet)
-        send_email(email, subject, body)
-        exit()
+    # for email in active_emails:
+    #     subject, body = generate_email(template, email, spreadsheet)
+    #     send_email(email, subject, body)
+    #     exit()
 
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
@@ -78,7 +83,7 @@ def main(file):
             "[5] Search for an existing member\n" \
             "[6] Create a nametag for an existing member\n" \
             "[7] Create a label sheet for an existing member\n" \
-            "[8] Send a new semester update email\n" \
+            "[8] Send an email to a mailing list\n" \
             "[9] Exit")
         print("------------------------------------------")
         response = input("Please enter a number from the main menu:\n")
@@ -113,10 +118,11 @@ def main(file):
         elif response == "7":
             continue
         elif response == "8":
-            check = input("You have selected Send a new semester update email. Proceed? [y/n]\n")
+            check = input("You have selected Send an email to a mailing list. Proceed? [y/n]\n")
             if check == "y":
-                all_active_email("email-templates/semester_start_template.txt", \
-                                 file)
+                template = input("Please enter the file for the email template: \n")
+                
+                # all_active_email(template, file)
             else:
                 continue       
         else:
