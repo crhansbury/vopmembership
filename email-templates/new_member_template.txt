@@ -1,3 +1,5 @@
+Welcome to VOP, {first_name}!
+
 Dear {first_name},
 
 Welcome to VOP! We are so excited for you to join us this semester. You will be singing with us in the {section} section, and your section leader will be {sec_first} {sec_last}. Please reach out to {sec_first} at {sec_email} if you have any questions!

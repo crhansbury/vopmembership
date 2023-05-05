@@ -1,3 +1,5 @@
+{first_name}, your VOP membership info has been updated
+
 {first_name},
 
 Your information was updated in VOP's system. Please review the changes and reply to this email if anything is incorrect.

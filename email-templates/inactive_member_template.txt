@@ -1,3 +1,5 @@
+We will miss you, {first_name}!
+
 Dear {first_name},
 
 We are sad to see you leave VOP! If you are ever ready to return to the choir in the future, please let us know at vopmembershiptest@gmail.com. 

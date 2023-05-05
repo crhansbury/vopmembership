@@ -1,6 +1,6 @@
 from openpyxl import load_workbook
 from datetime import datetime
-from emails import new_member_email, send_email
+from emails import generate_email, send_email
 from newmember import create_member_id
 
 def add_member(file):
@@ -43,7 +43,7 @@ def add_member(file):
     # Generating and sending welcome email once new member has been successfully
     # appended to spreadsheet
     try:
-        subject, body = new_member_email("email-templates/new_member_template.txt", email, file)
+        subject, body = generate_email("email-templates/new_member_template.txt", email, file)
         send_email(email, subject, body)
     except:
         print("Email to {} was unsuccessful.".format(email))
@@ -67,13 +67,13 @@ def main(file):
             "[7] Create a label sheet for an existing member\n" \
             "[8] Exit")
         print("------------------------------------------")
-        response = input("Please enter a number from the main menu): ")
+        response = input("Please enter a number from the main menu:\n")
         if response == "8":
             break
         elif response == "1":
             # Double check that the user made the right choice
             check = input("You've chosen to Add a new member. Proceed?\n" \
-                          "(enter Y to continue, or N to go back to main menu:\n")
+                          "(enter 'y' to continue, or 'n' to go back to main menu):\n")
             if check.lower() == "y":
                 while True:
                     add_member(file)

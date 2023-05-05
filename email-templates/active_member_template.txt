@@ -1,3 +1,5 @@
+Welcome back to VOP, {first_name}!
+
 Dear {first_name},
 
 Welcome back to VOP! We missed you while you were away and we're so glad you're back singing with us.
