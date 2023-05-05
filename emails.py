@@ -81,6 +81,5 @@ def generate_email(template, receiver_email, spreadsheet):
                                         sec_email=section_leader[3])
     return subject, email_body
 
-subject, body = generate_email("email-templates/active_member_template.txt", "vopmembershiptest+jwhite@gmail.com", "vopmembership_data 3.xlsx")
-print("subject: ", subject)
-print("body: ", body)
+subject, body = generate_email("email-templates/updated_member_template.txt", "vopmembershiptest+jwhite@gmail.com", "vopmembership_data 3.xlsx")
+send_email("vopmembershiptest+jwhite@gmail.com", subject, body)
