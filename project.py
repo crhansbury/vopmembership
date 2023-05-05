@@ -49,12 +49,17 @@ def add_member(file):
     except:
         print("Email to {} was unsuccessful.".format(email))
 
-def new_semester_email(spreadsheet):
+def all_active_email(template, spreadsheet):
+    """Sends an email to every member in the Active Members sheet of the 
+    spreadsheet passed into the 'spreadsheet' parameter. Uses the email
+    template passed into the 'template' parameter."""
+    # Make a lsit of all emails from the Active Members sheet
     active_emails= query_active_member(spreadsheet, "email")
+    # Send an email to each email in list
     for email in active_emails:
-        subject, body = generate_email("email-templates/semester_start_template.txt", email, \
-                                   spreadsheet)
+        subject, body = generate_email(template, email, spreadsheet)
         send_email(email, subject, body)
+        exit()
 
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
@@ -110,7 +115,8 @@ def main(file):
         elif response == "8":
             check = input("You have selected Send a new semester update email. Proceed? [y/n]\n")
             if check == "y":
-                new_semester_email(file)
+                all_active_email("email-templates/semester_start_template.txt", \
+                                 file)
             else:
                 continue       
         else:
