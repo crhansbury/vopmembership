@@ -163,6 +163,29 @@ def active_member(file, attribute, attr_value):
                                    member.email, file)
     send_email(member.email, subject, body)
 
+def search_member(file, attribute, attr_value):
+    """Searches the spreadsheet for members that match the search criteria.
+    Prints all the information for the members who match the search.
+    Numbers all of the results if there are multiple members returned. Uses
+    the query_member_object() function to search the file."""
+    query_list = query_member_object(file, attribute, attr_value)
+    member_count = 1    
+    if len(query_list) > 1:
+        print("Multiple members meet your search criteria.")
+    for member in query_list:
+        print("Result number {}:".format(member_count))
+        print("Name: {} {}\n".format(member.first_name, member.last_name),
+              "Pronouns: {}\n".format(member.pronouns),
+              "Section: {}\n".format(member.section),
+              "Member ID: {}\n".format(member.id),
+              "Email: {}\n".format(member.email),
+              "Phone number: {}\n".format(member.phone),
+              "Address: {address}, {city} {state} {zip}".format(address=member.address,
+                                                                city=member.city,
+                                                                state=member.state,
+                                                                zip=member.zip))
+        member_count += 1
+
 
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
@@ -175,10 +198,10 @@ def main(file):
         print("Welcome to the VOP Membership Portal!\n" \
               "What would you like to do?")
         print("[1] Add new members\n" \
-            "[2] Remove a member from Active Members\n" \
-            "[3] Reinstate a member to Active Members\n" \
+            "[2] Remove members from Active Members\n" \
+            "[3] Reinstate members to Active Members\n" \
             "[4] Update existing members\n" \
-            "[5] Search for an existing member\n" \
+            "[5] Search for existing members\n" \
             "[6] Create a nametag for an existing member\n" \
             "[7] Create a label sheet for an existing member\n" \
             "[8] Send an email to all active members\n" \
@@ -271,14 +294,63 @@ def main(file):
         elif response == "4":
             continue
         elif response == "5":
-            continue
+            check = input("You have selected 'Search for an existing member'. "\
+                          "Proceed? [y/n]\n")
+            if check.lower().strip() == "y":
+                while True:
+                    print("Please choose the search criteria:\n",
+                          "[1] First Name\n",
+                          "[2] Last Name\n",
+                          "[3] Pronouns\n",
+                          "[4] Section\n",
+                          "[5] Member ID\n",
+                          "[6] Email\n",
+                          "[7] Phone number\n",
+                          "[8] Street Address\n",
+                          "[9] City\n",
+                          "[10] State\n",
+                          "[11] Zip Code")
+                    reply = input("(choose a number from the menu above)\n")
+                    attribute = ""
+                    if reply == "1":
+                        attribute = "first_name"
+                    elif reply == "2":
+                        attribute = "last_name"
+                    elif reply == "3":
+                        attribute = "pronouns"
+                    elif reply == "4":
+                        attribute = "section"
+                    elif reply == "5":
+                        attribute = "id"
+                    elif reply == "6":
+                        attribute = "email"
+                    elif reply == "7":
+                        attribute = "phone"
+                    elif reply == "8":
+                        attribute = "address"
+                    elif reply == "9":
+                        attribute = "city"
+                    elif reply == "10":
+                        attribute = "state"
+                    elif reply == "11":
+                        attribute = "zip"
+                    else:
+                        print("Please enter a valid number from the menu.")
+                        continue
+                    attr_value = input("Please enter the member's {}:\n".format(attribute))
+                    search_member(file, attribute, attr_value)
+                    again = input("Would you like to perform another search? [y/n]\n")
+                    if again.lower().strip() == "y":
+                        continue
+                    else:
+                        break
         elif response == "6":
             continue
         elif response == "7":
             continue
         elif response == "8":
-            check = input("You have selected 'Send an email to all active \
-                          members'. Proceed? [y/n]\n")
+            check = input("You have selected 'Send an email to all active " \
+                          "members'. Proceed? [y/n]\n")
             if check == "y":
                 template = input("Please enter the email template file: \n")
                 try:
