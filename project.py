@@ -3,7 +3,7 @@ from openpyxl.styles import Border, Side, Alignment
 from datetime import datetime
 from emails import generate_email, send_email
 from newmember import create_member_id
-from querymember import query_active_member
+from querymember import query_active_member, query_member_object
 
 def add_member(file):
     """Adds a member to the spreadsheet. Takes criteria for:
@@ -11,6 +11,7 @@ def add_member(file):
     mailing address. Appends spreadsheet with this information. Updates
     a field that indicates the date of the latest update."""
     # Prompt the user for info
+    print("Please enter the information for the new member.")
     first_name = input("First Name: ")
     last_name = input("Last Name: ")
     pronouns = input("Pronouns: ")
@@ -55,7 +56,8 @@ def add_member(file):
     # Generating and sending welcome email once new member has been successfully
     # appended to spreadsheet
     try:
-        subject, body = generate_email("email-templates/new_member_template.txt", email, file)
+        subject, body = generate_email("email-templates/new_member_template.txt", 
+                                       email, file)
         send_email(email, subject, body)
     except:
         print("Email to {} was unsuccessful.".format(email))
@@ -71,6 +73,97 @@ def all_active_email(template, spreadsheet):
         subject, body = generate_email(template, email, spreadsheet)
         send_email(email, subject, body)
 
+def inactive_member(file, attribute, attr_value):
+    """Moves a member from the Active Member sheet to the Inactive Member 
+    sheet."""
+    member = query_member_object(file, attribute, attr_value)[0]
+    # # Open the inactive sheet and append the member to the inactive sheet
+    workbook = load_workbook(file)
+    inactive_sheet = workbook["Inactive Members"]
+    active_sheet = workbook["Active Members"]
+    # Find the row that matches the email attribute
+    active_sheet_row = 0
+    for row_num, row in enumerate(active_sheet.iter_rows(min_row=2, min_col=12, 
+                                                         max_col=12, 
+                                                         values_only=True), 
+                                                         start=2):
+        if member.email == row[0]:
+            active_sheet_row = row_num
+    # Find the last row of inactive sheet
+    inactive_sheet_row = inactive_sheet.max_row + 1
+    # Copy/pasting all values from active sheet to inactive sheet
+    for col_num, cell in enumerate(active_sheet[active_sheet_row], 1):
+        value = cell.value
+        inactive_sheet.cell(row=inactive_sheet_row, column=col_num, value=value)
+    # Formatting the cells
+    thin_border = Border(left=Side(style='thin'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+    alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
+    for cell in inactive_sheet[inactive_sheet_row]:
+        cell.border = thin_border
+        cell.alignment = alignment
+    # Delete the member from active member sheet
+    active_sheet.delete_rows(idx=active_sheet_row)
+    # Add date modified
+    date = datetime.now()
+    active_sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"),
+                                                   date.strftime("%H:%M"))
+    workbook.save(file)
+    print("{} successfully moved to Inactive Members.".format(member.first_name))
+    # Send an automatic email when this completes
+    subject, body = generate_email("email-templates/inactive_member_template.txt",
+                                   member.email, file)
+    send_email(member.email, subject, body)
+
+def active_member(file, attribute, attr_value):
+    """Moves a member from the Inactive Member sheet to the Active Member 
+    sheet. Takes the argument of a member attribute and value, and looks
+    up that member. Copies the member over from the Inactive sheet to the 
+    Active sheet."""
+    member = query_member_object(file, attribute, attr_value)[0]
+    # Open the active sheet and append the member to the active sheet
+    workbook = load_workbook(file)
+    inactive_sheet = workbook["Inactive Members"]
+    active_sheet = workbook["Active Members"]
+    # Find the row that matches the email attribute
+    inactive_sheet_row = 0
+    for row_num, row in enumerate(inactive_sheet.iter_rows(min_row=2, min_col=12, 
+                                                         max_col=12, 
+                                                         values_only=True), 
+                                                         start=2):
+        if member.email == row[0]:
+            inactive_sheet_row = row_num
+    # Find the last row of inactive sheet
+    active_sheet_row = active_sheet.max_row + 1
+    # Copy/pasting all values from inactive sheet to active sheet
+    for col_num, cell in enumerate(inactive_sheet[inactive_sheet_row], 1):
+        value = cell.value
+        active_sheet.cell(row=active_sheet_row, column=col_num, value=value)
+    # Formatting the cells
+    thin_border = Border(left=Side(style='thin'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+    alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
+    for cell in active_sheet[active_sheet_row]:
+        cell.border = thin_border
+        cell.alignment = alignment
+    # Delete member from inactive member sheet
+    inactive_sheet.delete_rows(idx=inactive_sheet_row)
+    # Add date modified
+    date = datetime.now()
+    active_sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"),
+                                                   date.strftime("%H:%M"))
+    workbook.save(file)
+    print("{} successfully moved to Active Members.".format(member.first_name))
+    # Send an automatic email when this completes
+    subject, body = generate_email("email-templates/active_member_template.txt",
+                                   member.email, file)
+    send_email(member.email, subject, body)
+
+
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
     if user would like to enter a new member into the spreadsheet, 
@@ -80,11 +173,11 @@ def main(file):
     while True:
         print("------------------------------------------")
         print("Welcome to the VOP Membership Portal!\n" \
-            "What would you like to do?")
+              "What would you like to do?")
         print("[1] Add new members\n" \
-            "[2] Update existing members\n" \
-            "[3] Remove a member from Active Members\n" \
-            "[4] Reinstate a member to Active Members\n" \
+            "[2] Remove a member from Active Members\n" \
+            "[3] Reinstate a member to Active Members\n" \
+            "[4] Update existing members\n" \
             "[5] Search for an existing member\n" \
             "[6] Create a nametag for an existing member\n" \
             "[7] Create a label sheet for an existing member\n" \
@@ -96,7 +189,7 @@ def main(file):
             break
         elif response == "1":
             # Double check that the user made the right choice
-            check = input("You've chosen to Add a new member. Proceed?\n" \
+            check = input("You have selected 'Add a new member'. Proceed?\n" \
                           "(enter 'y' to continue, or 'n' to go back to main menu):\n")
             if check.lower() == "y":
                 while True:
@@ -111,9 +204,70 @@ def main(file):
             else:
                 continue
         elif response == "2":
-            continue
+            check = input("You have selected 'Remove a member from Active " \
+                          "Members'. Proceed? [y/n]\n")
+            if check.lower().strip() == "y":
+                while True:
+                    while True:
+                        print("Please choose one of the following types of "\
+                            "information for the member you wish you remove:\n"\
+                            "[1] Email\n"\
+                            "[2] Member ID")
+                        response = input("")
+                        attribute = ""
+                        if response == "1":
+                            attribute = "email"
+                            break
+                        elif response == "2":
+                            attribute = "id"
+                            break
+                        else:
+                            print("Please select a valid item from the menu.")
+                            continue
+                    attr_value = input("Please enter the member's {}:\n".format(attribute))
+                    try:
+                        inactive_member(file, attribute, attr_value)
+                    except: 
+                        print("{} is not a valid {}.".format(attr_value, attribute))
+                        continue
+                    again = input("Would you like to remove another member? [y/n]\n")
+                    if again.lower().strip() == "y":
+                        continue
+                    else:
+                        break
         elif response == "3":
-            continue
+            check = input("You have selected 'Reinstate a member to Active "\
+                          "Members'. Proceed? [y/n]\n")
+            if check.lower().strip() == "y":
+                while True:
+                    while True:
+                        print("Please choose one of the following types of " 
+                              "information for the member you wish to " \
+                              "reinstate:\n" \
+                              "[1] Email\n"\
+                              "[2] Member ID")
+                        response = input("")
+                        attribute = ""
+                        if response == "1":
+                            attribute = "email"
+                            break
+                        elif response == "2":
+                            attribute = "id"
+                            break
+                        else:
+                            print("Please select a valid item from the menu.")
+                            continue
+                    attr_value = input("Please enter the member's {}:\n".format(attribute))
+                    try:
+                        active_member(file, attribute, attr_value)
+                    except: 
+                        print("{} is not a valid {}.".format(attr_value, attribute))
+                        continue
+                    again = input("Would you like to reinstate another member? [y/n]\n")
+                    if again.lower().strip() == "y":
+                        continue
+                    else:
+                        break
         elif response == "4":
             continue
         elif response == "5":
@@ -123,7 +277,8 @@ def main(file):
         elif response == "7":
             continue
         elif response == "8":
-            check = input("You have selected Send an email to all active members. Proceed? [y/n]\n")
+            check = input("You have selected 'Send an email to all active \
+                          members'. Proceed? [y/n]\n")
             if check == "y":
                 template = input("Please enter the email template file: \n")
                 try:

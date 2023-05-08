@@ -139,6 +139,8 @@ A future goal of this application is to create a user account for each new membe
 
 Pregueiro, Pedro. "A Guide to Excel Spreadsheets in Python with openpyxl". https://realpython.com/openpyxl-excel-spreadsheets-python/#importing-data-from-a-spreadsheet. 2019, Aug 26.
 
+Gazoni, Eric and Clark, Charlie. "openpyxl". https://openpyxl.readthedocs.io/en/latest/index.html. 2023.
+
 The PyCoach. "How to Easily Automate Emails with Python." https://towardsdatascience.com/how-to-easily-automate-emails-with-python-8b476045c151. 2022, Jun 8.
 
 The PyCoach. "How to Hide Passwords and Secret Keys in Your Python Scripts." https://medium.com/geekculture/how-to-hide-passwords-and-secret-keys-in-your-python-scripts-a8904d5560ec. 2022, May 26.

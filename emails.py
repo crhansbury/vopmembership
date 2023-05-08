@@ -57,15 +57,15 @@ def generate_email(template, receiver_email, spreadsheet):
     be written in the template as: {sec_first}, {sec_last}, and {sec_email}."""
     
     # Retrieving the attributes from the spreadsheet for the member
-    member_attributes = query_member_attr(spreadsheet, "email", receiver_email, \
-                                           "first_name", "last_name", "pronouns", \
-                                            "section", "id", "phone", "address", \
+    member_attributes = query_member_attr(spreadsheet, "email", receiver_email,
+                                           "first_name", "last_name", "pronouns",
+                                            "section", "id", "phone", "address",
                                             "city", "state", "zip")
     # Turning the items in the list of attributes into strings
     mattr_string = [str(i) for i in member_attributes[0]]
     # Retrieving attributes for all section leaders from the spreadshet
-    sec_leader_attributes = query_member_attr(spreadsheet, "role", \
-                                              "Section leader", "section", \
+    sec_leader_attributes = query_member_attr(spreadsheet, "role",
+                                              "Section leader", "section",
                                               "first_name", "last_name", "email")
     # Finding the section leader for the member's section
     section_leader = []
@@ -78,18 +78,18 @@ def generate_email(template, receiver_email, spreadsheet):
         subject = f.readline().strip().format(first_name=mattr_string[0])
         next(f)
         email_template = f.read()
-    email_body = email_template.format(first_name=mattr_string[0], \
-                                        last_name=mattr_string[1], \
-                                        pronouns=mattr_string[2], \
-                                        section=mattr_string[3], \
-                                        id=mattr_string[4], \
-                                        email=receiver_email, \
-                                        phone=mattr_string[5], \
-                                        address=mattr_string[6], \
-                                        city=mattr_string[7], \
-                                        state=mattr_string[8], \
-                                        zipcode=mattr_string[9], \
-                                        sec_first=section_leader[1], \
-                                        sec_last=section_leader[2], \
+    email_body = email_template.format(first_name=mattr_string[0],
+                                        last_name=mattr_string[1],
+                                        pronouns=mattr_string[2],
+                                        section=mattr_string[3],
+                                        id=mattr_string[4],
+                                        email=receiver_email,
+                                        phone=mattr_string[5],
+                                        address=mattr_string[6],
+                                        city=mattr_string[7],
+                                        state=mattr_string[8],
+                                        zipcode=mattr_string[9],
+                                        sec_first=section_leader[1],
+                                        sec_last=section_leader[2],
                                         sec_email=section_leader[3])
     return subject, email_body
