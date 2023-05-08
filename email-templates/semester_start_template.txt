@@ -9,6 +9,7 @@ Please review the following information. Reply to this email if any of your info
 Name: {first_name} {last_name}
 Pronouns: {pronouns}
 Section: {section}
+Role: {role}
 Member ID: {id}
 Email: {email}
 Phone Number: {phone}

@@ -7,6 +7,7 @@ Your information was updated in VOP's system. Please review the changes and repl
 Name: {first_name} {last_name}
 Pronouns: {pronouns}
 Section: {section}
+Role: {role}
 Member ID: {id}
 Email: {email}
 Phone Number: {phone}

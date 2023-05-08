@@ -37,12 +37,12 @@ def send_email(reciever_email, subject, body):
     # Send the email
     server.sendmail(sender_email, reciever_email, em.as_string())
     server.quit()
-    print("Email successfully sent to {}".format(reciever_email))
+    print("Email successfully sent to {} with the subject: {}".format(reciever_email, subject))
 
 def generate_email(template, receiver_email, spreadsheet):
     """Returns two values: (subject, email_body). Fills in an existing template 
-    for an email with all of the memeber's attributes, their section leader, and
-    the section leader's email. 
+    for an email with all of the memeber's attributes, their Section Leader, and
+    the Section Leader's email. 
     
     The subject is defined in the template as the first line followed by an 
     empty line. The body includes the third line of the template to the end. 
@@ -53,21 +53,21 @@ def generate_email(template, receiver_email, spreadsheet):
     The variables must be written in the template as: {first_name}, {last_name}, 
     {pronouns}, {section}, {id}, {email}, {phone}, {address}, {city}, {state}, 
     {zipcode}. Other variables inclue the section, name, and email of the 
-    section leader associated with the member's section. These variables must
+    Section Leader associated with the member's section. These variables must
     be written in the template as: {sec_first}, {sec_last}, and {sec_email}."""
     
     # Retrieving the attributes from the spreadsheet for the member
     member_attributes = query_member_attr(spreadsheet, "email", receiver_email,
                                            "first_name", "last_name", "pronouns",
                                             "section", "id", "phone", "address",
-                                            "city", "state", "zip")
+                                            "city", "state", "zip", "role")
     # Turning the items in the list of attributes into strings
     mattr_string = [str(i) for i in member_attributes[0]]
-    # Retrieving attributes for all section leaders from the spreadshet
+    # Retrieving attributes for all Section Leaders from the spreadshet
     sec_leader_attributes = query_member_attr(spreadsheet, "role",
-                                              "Section leader", "section",
+                                              "Section Leader", "section",
                                               "first_name", "last_name", "email")
-    # Finding the section leader for the member's section
+    # Finding the Section Leader for the member's section
     section_leader = []
     for list in sec_leader_attributes:
         new_section = mattr_string[3]
@@ -89,6 +89,7 @@ def generate_email(template, receiver_email, spreadsheet):
                                         city=mattr_string[7],
                                         state=mattr_string[8],
                                         zipcode=mattr_string[9],
+                                        role=mattr_string[10],
                                         sec_first=section_leader[1],
                                         sec_last=section_leader[2],
                                         sec_email=section_leader[3])
