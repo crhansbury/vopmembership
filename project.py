@@ -1,9 +1,12 @@
 from openpyxl import load_workbook
 from openpyxl.styles import Border, Side, Alignment
 from datetime import datetime
+import sys
+import os
 from emails import generate_email, send_email
 from newmember import create_member_id
 from querymember import query_active_member, query_member_object
+from updatemember import update_member, inactive_member, active_member
 
 def add_member(file):
     """Adds a member to the spreadsheet. Takes criteria for:
@@ -23,6 +26,7 @@ def add_member(file):
     city = input("City: ").title()
     state = input("State: ").upper()
     zipcode = input("Zip Code: ")
+    status = "Active"
     # Generate new member ID
     try:
         member_id = create_member_id(file)
@@ -33,8 +37,8 @@ def add_member(file):
     workbook = load_workbook(filename=file)
     sheet = workbook["Active Members"]
     row = (
-        last_name,first_name,pronouns,section,member_id,role,address,city, \
-        state,zipcode,phone,email
+        last_name,first_name,pronouns,section,member_id,role,address,city,
+        state,zipcode,phone,email,status
     )
     sheet.append(row)
     # Formatting the new row to match the rest of the spreadsheet
@@ -49,8 +53,8 @@ def add_member(file):
         cell.alignment = alignment
     # Adding the date modified
     date = datetime.now()
-    sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"),
-                                                   date.strftime("%H:%M"))
+    sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
+                                    date.strftime("%H:%M"))
     workbook.save(file)
     print("{} {} successfully added to {}.".format(first_name, last_name, file))
     # Generating and sending welcome email once new member has been successfully
@@ -73,256 +77,64 @@ def all_active_email(template, spreadsheet):
         subject, body = generate_email(template, email, spreadsheet)
         send_email(email, subject, body)
 
-def inactive_member(file, attribute, attr_value):
-    """Moves a member from the Active Member sheet to the Inactive Member 
-    sheet."""
-    member = query_member_object(file, attribute, attr_value)[0]
-    # Open the inactive sheet and append the member to the inactive sheet
-    workbook = load_workbook(file)
-    inactive_sheet = workbook["Inactive Members"]
-    active_sheet = workbook["Active Members"]
-    # Find the row that matches the email attribute
-    active_sheet_row = 0
-    for row_num, row in enumerate(active_sheet.iter_rows(min_row=2, min_col=12, 
-                                                         max_col=12, 
-                                                         values_only=True), 
-                                                         start=2):
-        if member.email == row[0]:
-            active_sheet_row = row_num
-    # Find the last row of inactive sheet
-    inactive_sheet_row = inactive_sheet.max_row + 1
-    # Copy/pasting all values from active sheet to inactive sheet
-    for col_num, cell in enumerate(active_sheet[active_sheet_row], 1):
-        value = cell.value
-        inactive_sheet.cell(row=inactive_sheet_row, column=col_num, value=value)
-    # Formatting the cells
-    thin_border = Border(left=Side(style='thin'),
-                         right=Side(style='thin'),
-                         top=Side(style='thin'),
-                         bottom=Side(style='thin'))
-    alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
-    for cell in inactive_sheet[inactive_sheet_row]:
-        cell.border = thin_border
-        cell.alignment = alignment
-    # Delete the member from active member sheet
-    active_sheet.delete_rows(idx=active_sheet_row)
-    # Add date modified
-    date = datetime.now()
-    active_sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"),
-                                                   date.strftime("%H:%M"))
-    workbook.save(file)
-    print("{} successfully moved to Inactive Members.".format(member.first_name))
-    # Send an automatic email when this completes
-    subject, body = generate_email("email-templates/inactive_member_template.txt",
-                                   member.email, file)
-    send_email(member.email, subject, body)
-
-def active_member(file, attribute, attr_value):
-    """Moves a member from the Inactive Member sheet to the Active Member 
-    sheet. Takes the argument of a member attribute and value, and looks
-    up that member. Copies the member over from the Inactive sheet to the 
-    Active sheet."""
-    member = query_member_object(file, attribute, attr_value)[0]
-    # Open the active sheet and append the member to the active sheet
-    workbook = load_workbook(file)
-    inactive_sheet = workbook["Inactive Members"]
-    active_sheet = workbook["Active Members"]
-    # Find the row that matches the email attribute
-    inactive_sheet_row = 0
-    for row_num, row in enumerate(inactive_sheet.iter_rows(min_row=2, min_col=12, 
-                                                         max_col=12, 
-                                                         values_only=True), 
-                                                         start=2):
-        if member.email == row[0]:
-            inactive_sheet_row = row_num
-    # Find the last row of inactive sheet
-    active_sheet_row = active_sheet.max_row + 1
-    # Copy/pasting all values from inactive sheet to active sheet
-    for col_num, cell in enumerate(inactive_sheet[inactive_sheet_row], 1):
-        value = cell.value
-        active_sheet.cell(row=active_sheet_row, column=col_num, value=value)
-    # Formatting the cells
-    thin_border = Border(left=Side(style='thin'),
-                         right=Side(style='thin'),
-                         top=Side(style='thin'),
-                         bottom=Side(style='thin'))
-    alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
-    for cell in active_sheet[active_sheet_row]:
-        cell.border = thin_border
-        cell.alignment = alignment
-    # Delete member from inactive member sheet
-    inactive_sheet.delete_rows(idx=inactive_sheet_row)
-    # Add date modified
-    date = datetime.now()
-    active_sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"),
-                                                   date.strftime("%H:%M"))
-    workbook.save(file)
-    print("{} successfully moved to Active Members.".format(member.first_name))
-    # Send an automatic email when this completes
-    subject, body = generate_email("email-templates/active_member_template.txt",
-                                   member.email, file)
-    send_email(member.email, subject, body)
-
 def search_member(file, attribute, attr_value):
     """Searches the spreadsheet for members that match the search criteria.
     Prints all the information for the members who match the search.
     Numbers all of the results if there are multiple members returned. Uses
     the query_member_object() function to search the file."""
+    # Finding all members who match search criteria
     query_list = query_member_object(file, attribute, attr_value)
-    if len(query_list) < 1:
+    if query_list == None:
         print("No members meet your search criteria.")
     else:
-        if len(query_list) > 1:
-            print("Multiple members meet your search criteria.")
+        print(f"{len(query_list)} member(s) meet your search criteria.")
         member_count = 1
+        # Print out information for each member
         for member in query_list:
-            print("Result number {}:".format(member_count))
-            print("Name: {} {}\n".format(member.first_name, member.last_name),
-                "Pronouns: {}\n".format(member.pronouns),
-                "Section: {}\n".format(member.section),
-                "Member ID: {}\n".format(member.id),
-                "Email: {}\n".format(member.email),
-                "Phone number: {}\n".format(member.phone),
-                "Address: {address}, {city} {state} {zip}".format(address=member.address,
-                                                                    city=member.city,
-                                                                    state=member.state,
-                                                                    zip=member.zip))
+            print(f"Result number {member_count}:")
+            print(f" Name: {member.first_name} {member.last_name}\n",
+                f"Pronouns: {member.pronouns}\n",
+                f"Section: {member.section}\n",
+                f"Role: {member.role}\n",
+                f"Member ID: {member.id}\n",
+                f"Email: {member.email}\n",
+                f"Phone number: {member.phone}\n",
+                f"Address: {member.address}, {member.city} {member.state} {member.zip}\n",
+                f"Status: {member.status}")
             member_count += 1
-
-def update_member(file, email):
-    """Updates the member information in the spreadsheet. Prompts user for:
-     name, pronouns, voice part, role, email address, phone number, or 
-      mailing address."""
-    # Open the file and iterate over the emails field to find the desired row
-    workbook = load_workbook(file)
-    sheet = workbook["Active Members"]
-    edit_row = 0
-    best_email = email
-    for row_num, row in enumerate(sheet.iter_rows(min_row=2, min_col=1, 
-                                                  max_col=12, values_only=True), 
-                                                  start=2):
-        if email == row[11]:
-            edit_row = row_num
-            member_first = row[1]
-            member_last = row[0]
-    if edit_row == 0:
-        print("{} not found in {}.".format(email, file))
-    else:
-        check = input("Edit information for {} {}? [y/n]\n".format(member_first, member_last))
-        if check.lower().strip() == "y":
-            while True:
-                print("Please select which field you would like to edit\n",
-                      "[1] First Name\n",
-                      "[2] Last Name\n",
-                      "[3] Pronouns\n",
-                      "[4] Section\n",
-                      "[5] Email\n",
-                      "[6] Phone number\n",
-                      "[7] Address\n",
-                      "[8] Role")
-                response = input("(enter a number from the menu above)\n")
-                if response == "1":
-                    first_name = input("Please enter new first name: ").title()
-                    sheet.cell(row=edit_row, column=2, value=first_name)
-                    member_first = first_name
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                if response == "2":
-                    last_name = input("Please enter new last name: ").title()
-                    sheet.cell(row=edit_row, column=1, value=last_name)
-                    member_last = last_name
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                if response == "3":
-                    pronouns = input("Please enter new pronouns: ").lower()
-                    sheet.cell(row=edit_row, column=3, value=pronouns)
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                if response == "4":
-                    section = input("Please enter new section: ").upper()
-                    sheet.cell(row=edit_row, column=4, value=section)
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                if response == "5":
-                    new_email = input("Please enter new email: ")
-                    sheet.cell(row=edit_row, column=12, value=new_email)
-                    best_email = new_email
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                if response == "6":
-                    phone = input("Please enter new phone number: ")
-                    sheet.cell(row=edit_row, column=11, value=phone)
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                if response == "7":
-                    street_address = input("Please enter new street address: ").title()
-                    sheet.cell(row=edit_row, column=7, value=street_address)
-                    city = input("Please enter new city: ").title()
-                    sheet.cell(row=edit_row, column=8, value=city)
-                    state = input("Please enter new state: ").upper()
-                    sheet.cell(row=edit_row, column=9, value=state)
-                    zipcode = input("Please enter new zip code: ")
-                    sheet.cell(row=edit_row, column=10, value=zipcode)
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                if response == "8":
-                    role = input("Please enter new role: ").title()
-                    sheet.cell(row=edit_row, column=6, value=role)
-                    # Prompt user for another edit
-                    again = input("Edit another field? [y/n]\n").lower().strip()
-                    if again == "y":
-                        continue
-                    else:
-                        break
-                else:
-                    print("Please enter a valid response from the menu.")
-                    continue
-            # Adding the date modified
-            date = datetime.now()
-            sheet["M1"] = "Date Modified: {} at {}".format(date.strftime("%m/%d/%Y"),
-                                                   date.strftime("%H:%M"))
-            workbook.save(file)
-            print("{} {} successfully edited.".format(member_first, member_last))
-            subject, body = generate_email("email-templates/updated_member_template.txt",
-                                           best_email, file)
-            send_email(best_email, subject, body)
 
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
     if user would like to enter a new member into the spreadsheet, 
-    change member information, 
-    make a member inactive, or query the spreadsheet for information.
-    Takes a command line argument of the file from which to read and edit."""
-    # Test the file at the beginning to ensure it's the right format to avoid
-    # testing it for every function
+    change member information, make a member inactive, or query the spreadsheet 
+    for information."""
+    # Test the file to ensure it is in the right format.
+    if os.path.exists(file):
+        workbook = load_workbook(file)
+        try:
+            active_sheet = workbook["Active Members"]
+            try:
+                inactive_sheet = workbook["Inactive Members"]
+            except KeyError:
+                print(f"{file} is not formatted correctly. Please ensure " \
+                      "spreadsheet includes a sheet titled 'Inactive Members'.")
+                sys.exit(1)
+            column_names = ["last name", "first name", "pronouns", "section", 
+                    "member id", "role", "address", "city", "state", "zip", 
+                    "phone", "email", "status", "date modified"]
+            for col_num, cell in enumerate(active_sheet[1]):
+                if cell.value != column_names[col_num]:
+                    print(f"{file} is not formatted correctly. Please ensure the" \
+                          " spreadsheet has 14 columns, named:")
+                    print(*column_names, sep="\n")
+                    sys.exit(1)
+        except KeyError:
+            print(f"{file} is not formatted correctly. Please ensure spreadsheet \
+                  includes a sheet titled 'Active Members'.")
+            sys.exit(1)
+    else:
+        print(f"{file} does not exist.")
+        sys.exit(1)
     while True:
         print("------------------------------------------")
         print("Welcome to the VOP Membership Portal!\n" \
@@ -342,7 +154,7 @@ def main(file):
             break
         elif response == "1":
             # Double check that the user made the right choice
-            check = input("You have selected 'Add a new member'. Proceed?\n" \
+            check = input("You have selected 'Add new members'. Proceed?\n" \
                           "(enter 'y' to continue, or 'n' to go back to main menu):\n")
             if check.lower() == "y":
                 while True:
@@ -355,6 +167,7 @@ def main(file):
                     else:
                         break
             else:
+                print("Returning to Main Menu.")
                 continue
         elif response == "2":
             check = input("You have selected 'Remove a member from Active " \
@@ -366,6 +179,7 @@ def main(file):
                             "information for the member you wish you remove:\n"\
                             "[1] Email\n"\
                             "[2] Member ID")
+                        # Okay wait... I think the new member ids are int where the old ones are str and now it won't search by member ID HELP
                         response = input("")
                         attribute = ""
                         if response == "1":
@@ -377,18 +191,18 @@ def main(file):
                         else:
                             print("Please select a valid item from the menu.")
                             continue
-                    attr_value = input("Please enter the member's {}:\n".format(attribute))
+                    attr_value = input(f"Please enter the member's {attribute}:\n")
                     try:
                         inactive_member(file, attribute, attr_value)
-                    except: 
-                        print("{} is not a valid {}.".format(attr_value, attribute))
-                        continue
+                    except TypeError: 
+                        continue               
                     again = input("Would you like to remove another member? [y/n]\n")
                     if again.lower().strip() == "y":
                         continue
                     else:
                         break
             else:
+                print("Returning to Main Menu.")
                 continue
         elif response == "3":
             check = input("You have selected 'Reinstate a member to Active "\
@@ -412,18 +226,18 @@ def main(file):
                         else:
                             print("Please select a valid item from the menu.")
                             continue
-                    attr_value = input("Please enter the member's {}:\n".format(attribute))
+                    attr_value = input(f"Please enter the member's {attribute}:\n")
                     try:
                         active_member(file, attribute, attr_value)
-                    except: 
-                        print("{} is not a valid {}.".format(attr_value, attribute))
-                        continue
+                    except TypeError: 
+                        continue 
                     again = input("Would you like to reinstate another member? [y/n]\n")
                     if again.lower().strip() == "y":
                         continue
                     else:
                         break
             else:
+                print("Returning to Main Menu.")
                 continue
         elif response == "4":
             check = input("You have selected 'Update active members'. "\
@@ -439,6 +253,7 @@ def main(file):
                     else:
                         break
             else:
+                print("Returning to Main Menu.")
                 continue
         elif response == "5":
             check = input("You have selected 'Search for an existing member'. "\
@@ -511,6 +326,7 @@ def main(file):
                     else:
                         break
             else:
+                print("Returning to Main Menu.")
                 continue
         elif response == "6":
             continue
@@ -528,10 +344,14 @@ def main(file):
                     print("invalid file")
                     continue
             else:
+                print("Returning to Main Menu.")
                 continue       
         else:
             print("Not a valid response. Please enter a number from the main menu.")
             continue
             
 if __name__ == '__main__':
-    main("vopmembership_data 5.xlsx")
+    file = input("Enter the name of the spreadsheet file you wish to edit:\n")
+    if file == "":
+        file = "vopmembership_data 6.xlsx"
+    main(file)

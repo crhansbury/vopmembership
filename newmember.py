@@ -54,5 +54,5 @@ def create_member_id(file):
     # Assigning the new id number as one greater than the largest id in the
     # spreadsheet
     max_number = max(id_list)
-    new_id = max_number + 1
+    new_id = str(max_number + 1)
     return new_id

@@ -2,7 +2,7 @@ from openpyxl import load_workbook
 from dataclasses import dataclass
 from mapping import MEMBER_ID, MEMBER_FIRST, MEMBER_LAST, \
     SECTION, PRONOUNS, ROLE, \
-    ADDRESS, CITY, STATE, ZIP, PHONE, EMAIL 
+    ADDRESS, CITY, STATE, ZIP, PHONE, EMAIL, STATUS
 
 # Defines a Member data class. Each member in the spreadsheet will be
 # an instance of the Member class, with each column of information
@@ -22,6 +22,7 @@ class Member:
     state: str
     zip: str
     phone: str
+    status: str
 
 def create_active_members(file):
     """Creates a list using the information from the spreadsheet
@@ -43,7 +44,8 @@ def create_active_members(file):
                                city=row[CITY],
                                state=row[STATE],
                                zip=row[ZIP],
-                               phone=row[PHONE])
+                               phone=row[PHONE],
+                               status=row[STATUS])
         active_members.append(active_member)
     return active_members
 
@@ -67,6 +69,7 @@ def create_inactive_members(file):
                                city=row[CITY],
                                state=row[STATE],
                                zip=row[ZIP],
-                               phone=row[PHONE])
+                               phone=row[PHONE],
+                               status=row[STATUS])
         inactive_members.append(inactive_member)
     return inactive_members

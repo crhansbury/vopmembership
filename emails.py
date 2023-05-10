@@ -73,6 +73,8 @@ def generate_email(template, receiver_email, spreadsheet):
         new_section = mattr_string[3]
         if list[0].startswith(new_section[0]):
             section_leader.extend(list)
+    if len(section_leader) < 1:
+        section_leader = ["None", "NO SECTION LEADER FOUND", " ", "NO EMAIL AVAILABLE"]
     # Open the email template and replace all variables with the correct info
     with open(template) as f:
         subject = f.readline().strip().format(first_name=mattr_string[0])

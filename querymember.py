@@ -1,4 +1,5 @@
 from classes import create_active_members, create_inactive_members
+import sys 
 
 def query_active_member(file, attribute):
     """Searches the list of active Member objects for a certain attribute, 
@@ -54,7 +55,14 @@ def query_member_object(file, attribute, attr_value):
     members = create_active_members(file) + create_inactive_members(file)
     member_list = []
     for member in members:
-        matching_attr = getattr(member, attribute)
-        if matching_attr == attr_value:
-            member_list.append(member)
-    return member_list
+        try:
+            matching_attr = getattr(member, attribute)
+            if matching_attr == attr_value:
+                member_list.append(member)
+        except AttributeError:
+            print(f"'{attribute}' is not a valid attribute.")
+            sys.exit(15)
+    if len(member_list) < 1:
+        print(f"No {attribute} found with the value {attr_value}.")
+    else:
+        return member_list
