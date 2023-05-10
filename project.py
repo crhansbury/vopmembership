@@ -144,13 +144,11 @@ def main(file):
             "[3] Reinstate members to Active Members\n" \
             "[4] Update active members\n" \
             "[5] Search for existing members\n" \
-            "[6] Create a nametag for an existing member\n" \
-            "[7] Create a label sheet for an existing member\n" \
-            "[8] Send an email to all active members\n" \
-            "[9] Exit")
+            "[6] Send an email to all active members\n" \
+            "[7] Exit")
         print("------------------------------------------")
         response = input("Please enter a number from the main menu:\n")
-        if response == "9":
+        if response == "7":
             break
         elif response == "1":
             # Double check that the user made the right choice
@@ -179,7 +177,6 @@ def main(file):
                             "information for the member you wish you remove:\n"\
                             "[1] Email\n"\
                             "[2] Member ID")
-                        # Okay wait... I think the new member ids are int where the old ones are str and now it won't search by member ID HELP
                         response = input("")
                         attribute = ""
                         if response == "1":
@@ -222,7 +219,7 @@ def main(file):
                             break
                         elif response == "2":
                             attribute = "id"
-                            break
+                            break                    
                         else:
                             print("Please select a valid item from the menu.")
                             continue
@@ -261,15 +258,15 @@ def main(file):
             if check.lower().strip() == "y":
                 while True:
                     print("Please choose the search criteria:\n",
-                          "[1] First Name\n",
-                          "[2] Last Name\n",
-                          "[3] Pronouns\n",
-                          "[4] Section\n",
-                          "[5] Role\n",
-                          "[6] Member ID\n",
-                          "[7] Email\n",
-                          "[8] Phone number\n",
-                          "[9] Street Address\n",
+                          "[1]  First Name\n",
+                          "[2]  Last Name\n",
+                          "[3]  Pronouns\n",
+                          "[4]  Section\n",
+                          "[5]  Role\n",
+                          "[6]  Member ID\n",
+                          "[7]  Email\n",
+                          "[8]  Phone number\n",
+                          "[9]  Street Address\n",
                           "[10] City\n",
                           "[11] State\n",
                           "[12] Zip Code")
@@ -329,10 +326,6 @@ def main(file):
                 print("Returning to Main Menu.")
                 continue
         elif response == "6":
-            continue
-        elif response == "7":
-            continue
-        elif response == "8":
             check = input("You have selected 'Send an email to all active " \
                           "members'. Proceed? [y/n]\n")
             if check == "y":

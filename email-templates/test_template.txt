@@ -1,5 +1,2 @@
-Testing a new all-members email function
-
-{first_name},
 
 This is a test email. If you are receiving this email, you are on the active members sheet.

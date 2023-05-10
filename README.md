@@ -46,6 +46,9 @@ Under the current conditions, in order to keep track of music, each member is cu
 
 The goal of this application is to generate a unique member ID to each new member when they are entered into the database. Once assigned, the member ID will never be used again, even after a member is suspended. This member ID will be stored in the database and used to print out a label sheet every semester when new music is distributed. This label sheet will have the member ID as well as the name and section of each member on it. This will make it easy for each member of the choir to label their own music when it is recieved, and will allow for easy tracking of music when it is returned at the end of the semester.
 
+UPDATE 5/10/23:
+The ability to create labels and nametags has been taken out of the project for the time being. The time constraints of the project are such that there was not time left to complete this stage of the project.
+
 ### Member Suspension
 
 Each semester a certain number of members leave the choir temporarily or permanently. Many members return after one or several semesters on leave and wish to be reinstated.
@@ -74,14 +77,14 @@ A future goal of this application is to create a user account for each new membe
 * output to a master spreadsheet of all members
     * 2 sheets: active members, inactive members
 * be able to edit members in existing db
-* print a nametag with name, section, and pronouns
-* print a label sheet with member ID
 * email new member welcome packet
 * send out an email each semester prompting existing members for information updates
 * lock application behind a username and password
 
 
 ### Future goals:
+* print a nametag with name, section, and pronouns (UPDATE 5/10/23)
+* print a label sheet with member ID (UPDATE 5/10/23)
 * GUI front-end for user input
 * integrate with google api to output to google drive/sheets   
 * accept user input with google forms to allow for registration individually

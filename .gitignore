@@ -14,3 +14,7 @@ __pycache__
 # Ignore the .DS_store file
 
 .DS_store
+
+# Ignore the test template
+
+email-templates/test_template.txt

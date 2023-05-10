@@ -1,6 +1,7 @@
 from email.message import EmailMessage
 import smtplib
 import os
+import sys 
 from querymember import query_member_attr
 
 def mailing_list():
@@ -78,6 +79,20 @@ def generate_email(template, receiver_email, spreadsheet):
     # Open the email template and replace all variables with the correct info
     with open(template) as f:
         subject = f.readline().strip().format(first_name=mattr_string[0])
+        # Testing to ensure the template is formatted correctly to return an 
+        # appropriate subject line
+        if len(subject) > 70:
+            print(f"{template} is not formatted correctly. Please ensure that "\
+                 "the email subject is the first line, followed by an empty "\
+                 "line, followed by the email body. The subject can be no "\
+                 "greater than 70 characters long.")
+            sys.exit(3)
+        elif subject == "":
+            print(f"{template} is not formatted correctly. Please ensure that "\
+                 "the email subject is the first line, followed by an empty "\
+                 "line, followed by the email body. The subject can be no "\
+                 "greater than 70 characters long.")
+            sys.exit(3)
         next(f)
         email_template = f.read()
     email_body = email_template.format(first_name=mattr_string[0],
