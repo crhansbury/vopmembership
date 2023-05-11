@@ -36,9 +36,12 @@ def send_email(reciever_email, subject, body):
     server.login(sender_email, password)
 
     # Send the email
-    server.sendmail(sender_email, reciever_email, em.as_string())
+    try:
+        server.sendmail(sender_email, reciever_email, em.as_string())
+    except:
+        print(f"Email to {reciever_email} unsuccessful.")
     server.quit()
-    print("Email successfully sent to {} with the subject: {}".format(reciever_email, subject))
+    print("✅ Email successfully sent to {} with the subject: {}".format(reciever_email, subject))
 
 def generate_email(template, receiver_email, spreadsheet):
     """Returns two values: (subject, email_body). Fills in an existing template 

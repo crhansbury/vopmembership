@@ -1,7 +1,6 @@
 from openpyxl import load_workbook
 from openpyxl.styles import Border, Side, Alignment
 from datetime import datetime
-import sys
 from querymember import query_member_object
 from emails import send_email, generate_email
 
@@ -131,7 +130,6 @@ def update_member(file, email):
                                            best_email, file)
             send_email(best_email, subject, body)
 
-
 def inactive_member(file, attribute, attr_value):
     """Moves a member from the Active Member sheet to the Inactive Member 
     sheet."""
@@ -174,13 +172,13 @@ def inactive_member(file, attribute, attr_value):
         active_sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
                                                date.strftime("%H:%M"))
         workbook.save(file)
-        print("{} successfully moved to Inactive Members.".format(member.first_name))
+        print("✅ {} successfully moved to Inactive Members.".format(member.first_name))
         # Send an automatic email when this completes
         subject, body = generate_email("email-templates/inactive_member_template.txt",
                                     member.email, file)
         send_email(member.email, subject, body)
     else:
-        print("Action cancelled.")
+        print("❌ Action cancelled.")
 
 def active_member(file, attribute, attr_value):
     """Moves a member from the Inactive Member sheet to the Active Member 
@@ -227,10 +225,10 @@ def active_member(file, attribute, attr_value):
         active_sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
                                         date.strftime("%H:%M"))
         workbook.save(file)
-        print("{} successfully moved to Active Members.".format(member.first_name))
+        print("✅ {} successfully moved to Active Members.".format(member.first_name))
         # Send an automatic email when this completes
         subject, body = generate_email("email-templates/active_member_template.txt",
                                     member.email, file)
         send_email(member.email, subject, body)
     else:
-        print("Action cancelled.")
+        print("❌ Action cancelled.")

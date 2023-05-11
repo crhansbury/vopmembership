@@ -9,9 +9,9 @@ from querymember import query_active_member, query_member_object
 from updatemember import update_member, inactive_member, active_member
 
 def add_member(file):
-    """Adds a member to the spreadsheet. Takes criteria for:
+    """Adds a member to the file. Takes criteria for:
     name, pronouns, voice part, role, email address, phone number, and 
-    mailing address. Appends spreadsheet with this information. Updates
+    mailing address. Appends file with this information. Updates
     a field that indicates the date of the latest update."""
     # Prompt the user for info
     print("Please enter the information for the new member.")
@@ -41,7 +41,7 @@ def add_member(file):
         state,zipcode,phone,email,status
     )
     sheet.append(row)
-    # Formatting the new row to match the rest of the spreadsheet
+    # Formatting the new row to match the rest of the file
     thin_border = Border(left=Side(style='thin'),
                          right=Side(style='thin'),
                          top=Side(style='thin'),
@@ -56,41 +56,42 @@ def add_member(file):
     sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
                                     date.strftime("%H:%M"))
     workbook.save(file)
-    print("{} {} successfully added to {}.".format(first_name, last_name, file))
+    print("✅ {} {} successfully added to {}.".format(first_name, last_name, file))
     # Generating and sending welcome email once new member has been successfully
-    # appended to spreadsheet
+    # appended to file
     try:
         subject, body = generate_email("email-templates/new_member_template.txt", 
                                        email, file)
         send_email(email, subject, body)
     except:
-        print("Email to {} was unsuccessful.".format(email))
+        pass
 
-def all_active_email(template, spreadsheet):
+def all_active_email(template, file):
     """Sends an email to every member in the Active Members sheet of the 
-    spreadsheet passed into the 'spreadsheet' parameter. Uses the email
+    spreadsheet passed into the 'file' parameter. Uses the email
     template passed into the 'template' parameter."""
     # Make a lsit of all emails from the Active Members sheet
-    active_emails= query_active_member(spreadsheet, "email")
+    active_emails= query_active_member(file, "email")
     # Send an email to each email in list
     for email in active_emails:
-        subject, body = generate_email(template, email, spreadsheet)
+        subject, body = generate_email(template, email, file)
         send_email(email, subject, body)
 
 def search_member(file, attribute, attr_value):
-    """Searches the spreadsheet for members that match the search criteria.
+    """Searches the file for members that match the search criteria.
     Prints all the information for the members who match the search.
     Numbers all of the results if there are multiple members returned. Uses
     the query_member_object() function to search the file."""
     # Finding all members who match search criteria
     query_list = query_member_object(file, attribute, attr_value)
     if query_list == None:
-        print("No members meet your search criteria.")
+        print("❌ No members meet your search criteria.")
     else:
         print(f"{len(query_list)} member(s) meet your search criteria.")
         member_count = 1
         # Print out information for each member
         for member in query_list:
+            print("⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽")
             print(f"Result number {member_count}:")
             print(f" Name: {member.first_name} {member.last_name}\n",
                 f"Pronouns: {member.pronouns}\n",
@@ -101,12 +102,13 @@ def search_member(file, attribute, attr_value):
                 f"Phone number: {member.phone}\n",
                 f"Address: {member.address}, {member.city} {member.state} {member.zip}\n",
                 f"Status: {member.status}")
+            # print("⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺")
             member_count += 1
 
 def main(file):
     """Prompts user for input. Prints out a main menu, asking
-    if user would like to enter a new member into the spreadsheet, 
-    change member information, make a member inactive, or query the spreadsheet 
+    if user would like to enter a new member into the file, 
+    change member information, make a member inactive, or query the file 
     for information."""
     # Test the file to ensure it is in the right format.
     if os.path.exists(file):
@@ -116,39 +118,40 @@ def main(file):
             try:
                 inactive_sheet = workbook["Inactive Members"]
             except KeyError:
-                print(f"{file} is not formatted correctly. Please ensure " \
-                      "spreadsheet includes a sheet titled 'Inactive Members'.")
+                print(f"❌ {file} is not formatted correctly. Please ensure " \
+                      "file includes a sheet titled 'Inactive Members'.")
                 sys.exit(1)
             column_names = ["last name", "first name", "pronouns", "section", 
                     "member id", "role", "address", "city", "state", "zip", 
                     "phone", "email", "status", "date modified"]
             for col_num, cell in enumerate(active_sheet[1]):
                 if cell.value != column_names[col_num]:
-                    print(f"{file} is not formatted correctly. Please ensure the" \
-                          " spreadsheet has 14 columns, named:")
+                    print(f"❌ {file} is not formatted correctly. Please ensure the" \
+                          " file has 14 columns, named:")
                     print(*column_names, sep="\n")
                     sys.exit(1)
         except KeyError:
-            print(f"{file} is not formatted correctly. Please ensure spreadsheet \
+            print(f"❌ {file} is not formatted correctly. Please ensure file \
                   includes a sheet titled 'Active Members'.")
             sys.exit(1)
     else:
-        print(f"{file} does not exist.")
+        print(f"❌ {file} does not exist.")
         sys.exit(1)
     while True:
-        print("------------------------------------------")
+        print("⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽")
         print("Welcome to the VOP Membership Portal!\n" \
               "What would you like to do?")
-        print("[1] Add new members\n" \
-            "[2] Remove members from Active Members\n" \
-            "[3] Reinstate members to Active Members\n" \
-            "[4] Update active members\n" \
-            "[5] Search for existing members\n" \
-            "[6] Send an email to all active members\n" \
-            "[7] Exit")
-        print("------------------------------------------")
+        print("1️⃣  Add new members\n" \
+            "2️⃣  Remove members from Active Members\n" \
+            "3️⃣  Reinstate members to Active Members\n" \
+            "4️⃣  Update active members\n" \
+            "5️⃣  Search for member information\n" \
+            "6️⃣  Send an email to all active members\n" \
+            "7️⃣  Exit")
+        print("⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺")
         response = input("Please enter a number from the main menu:\n")
         if response == "7":
+            print("👋 Goodbye!")
             break
         elif response == "1":
             # Double check that the user made the right choice
@@ -165,10 +168,10 @@ def main(file):
                     else:
                         break
             else:
-                print("Returning to Main Menu.")
+                print("⬅️ Returning to Main Menu.")
                 continue
         elif response == "2":
-            check = input("You have selected 'Remove a member from Active " \
+            check = input("You have selected 'Remove members from Active " \
                           "Members'. Proceed? [y/n]\n")
             if check.lower().strip() == "y":
                 while True:
@@ -197,12 +200,13 @@ def main(file):
                     if again.lower().strip() == "y":
                         continue
                     else:
+                        print("⬅️ Returning to Main Menu.")
                         break
             else:
-                print("Returning to Main Menu.")
+                print("⬅️ Returning to Main Menu.")
                 continue
         elif response == "3":
-            check = input("You have selected 'Reinstate a member to Active "\
+            check = input("You have selected 'Reinstate members to Active "\
                           "Members'. Proceed? [y/n]\n")
             if check.lower().strip() == "y":
                 while True:
@@ -232,9 +236,10 @@ def main(file):
                     if again.lower().strip() == "y":
                         continue
                     else:
+                        print("⬅️ Returning to Main Menu.")
                         break
             else:
-                print("Returning to Main Menu.")
+                print("⬅️ Returning to Main Menu.")
                 continue
         elif response == "4":
             check = input("You have selected 'Update active members'. "\
@@ -242,7 +247,7 @@ def main(file):
             if check.lower().strip() == "y":
                 while True:
                     email = input("Please enter the email for the member whose "\
-                                  "information you wish you update\n")
+                                  "information you wish you update:\n")
                     update_member(file, email)
                     again = input("Update another member? [y/n]\n").lower().strip()
                     if again == "y":
@@ -250,10 +255,10 @@ def main(file):
                     else:
                         break
             else:
-                print("Returning to Main Menu.")
+                print("⬅️ Returning to Main Menu.")
                 continue
         elif response == "5":
-            check = input("You have selected 'Search for an existing member'. "\
+            check = input("You have selected 'Search for member information'. "\
                           "Proceed? [y/n]\n")
             if check.lower().strip() == "y":
                 while True:
@@ -269,7 +274,8 @@ def main(file):
                           "[9]  Street Address\n",
                           "[10] City\n",
                           "[11] State\n",
-                          "[12] Zip Code")
+                          "[12] Zip Code\n",
+                          "[13] Status")
                     reply = input("(choose a number from the menu above)\n")
                     attribute = ""
                     attr_value = ""
@@ -311,10 +317,13 @@ def main(file):
                         try:
                             attr_value = int(input("Please enter the member's zip code:\n"))
                         except ValueError:
-                            print("Not a valid zip code.")
+                            print("❌ Not a valid zip code.")
                             continue                        
+                    elif reply == "13":
+                        attribute = "status"
+                        attr_value = input("Please enter the member's status:\n").title()
                     else:
-                        print("Please enter a valid number from the menu.")
+                        print("❌ Please enter a valid number from the menu.")
                         continue
                     search_member(file, attribute, attr_value)
                     again = input("Would you like to perform another search? [y/n]\n")
@@ -323,28 +332,23 @@ def main(file):
                     else:
                         break
             else:
-                print("Returning to Main Menu.")
+                print("⬅️ Returning to Main Menu.")
                 continue
         elif response == "6":
             check = input("You have selected 'Send an email to all active " \
                           "members'. Proceed? [y/n]\n")
             if check == "y":
                 template = input("Please enter the email template file: \n")
-                try:
-                    all_active_email(template, file)
-                    continue
-                except:
-                    print("invalid file")
-                    continue
+                all_active_email(template, file)
             else:
-                print("Returning to Main Menu.")
+                print("⬅️ Returning to Main Menu.")
                 continue       
         else:
-            print("Not a valid response. Please enter a number from the main menu.")
+            print("❌ Not a valid response. Please enter a number from the main menu.")
             continue
             
 if __name__ == '__main__':
-    file = input("Enter the name of the spreadsheet file you wish to edit:\n")
+    file = input("Enter the name of the file file you wish to edit:\n")
     if file == "":
         file = "vopmembership_data 6.xlsx"
     main(file)
