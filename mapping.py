@@ -1,4 +1,4 @@
-# Mapping field names to columns in spreadsheet for readability 
+# Mapping field names to columns in spreadsheet for readability
 MEMBER_ID = 4
 MEMBER_FIRST = 1
 MEMBER_LAST = 0

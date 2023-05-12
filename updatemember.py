@@ -4,18 +4,19 @@ from datetime import datetime
 from querymember import query_member_object
 from emails import send_email, generate_email
 
+
 def update_member(file, email):
     """Updates the member information in the spreadsheet. Prompts user for:
-     name, pronouns, voice part, role, email address, phone number, or 
-      mailing address."""
+    name, pronouns, voice part, role, email address, phone number, or
+     mailing address."""
     # Open the file and iterate over the emails field to find the desired row
     workbook = load_workbook(file)
     sheet = workbook["Active Members"]
     edit_row = 0
     best_email = email
-    for row_num, row in enumerate(sheet.iter_rows(min_row=2, min_col=1, 
-                                                  max_col=12, values_only=True), 
-                                                  start=2):
+    for row_num, row in enumerate(
+        sheet.iter_rows(min_row=2, min_col=1, max_col=12, values_only=True), start=2
+    ):
         if email == row[11]:
             edit_row = row_num
             member_first = row[1]
@@ -26,15 +27,17 @@ def update_member(file, email):
         check = input(f"Edit information for {member_first} {member_last}? [y/n]\n")
         if check.lower().strip() == "y":
             while True:
-                print("Please select which field you would like to edit\n",
-                      "[1] First Name\n",
-                      "[2] Last Name\n",
-                      "[3] Pronouns\n",
-                      "[4] Section\n",
-                      "[5] Email\n",
-                      "[6] Phone number\n",
-                      "[7] Address\n",
-                      "[8] Role")
+                print(
+                    "Please select which field you would like to edit\n",
+                    "[1] First Name\n",
+                    "[2] Last Name\n",
+                    "[3] Pronouns\n",
+                    "[4] Section\n",
+                    "[5] Email\n",
+                    "[6] Phone number\n",
+                    "[7] Address\n",
+                    "[8] Role",
+                )
                 response = input("(enter a number from the menu above)\n")
                 if response == "1":
                     first_name = input("Please enter new first name: ").title()
@@ -122,31 +125,36 @@ def update_member(file, email):
                     continue
             # Adding the date modified
             date = datetime.now()
-            sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
-                                            date.strftime("%H:%M"))
+            sheet["N2"] = "{} at {}".format(
+                date.strftime("%m/%d/%Y"), date.strftime("%H:%M")
+            )
             workbook.save(file)
             workbook.close()
             print(f"{member_first} {member_last} successfully edited.")
-            subject, body = generate_email("email-templates/updated_member_template.txt",
-                                           best_email, file)
+            subject, body = generate_email(
+                "email-templates/updated_member_template.txt", best_email, file
+            )
             send_email(best_email, subject, body)
 
+
 def inactive_member(file, attribute, attr_value):
-    """Moves a member from the Active Member sheet to the Inactive Member 
+    """Moves a member from the Active Member sheet to the Inactive Member
     sheet."""
     member = query_member_object(file, attribute, attr_value)[0]
     # Open the inactive sheet and append the member to the inactive sheet
-    check = input(f"Remove {member.first_name} {member.last_name} from Active Members? [y/n]\n")
+    check = input(
+        f"Remove {member.first_name} {member.last_name} from Active Members? [y/n]\n"
+    )
     if check == "y":
         workbook = load_workbook(file)
         inactive_sheet = workbook["Inactive Members"]
         active_sheet = workbook["Active Members"]
         # Find the row that matches the email attribute
         active_sheet_row = 0
-        for row_num, row in enumerate(active_sheet.iter_rows(min_row=2, min_col=12, 
-                                                            max_col=12, 
-                                                            values_only=True), 
-                                                            start=2):
+        for row_num, row in enumerate(
+            active_sheet.iter_rows(min_row=2, min_col=12, max_col=12, values_only=True),
+            start=2,
+        ):
             if member.email == row[0]:
                 active_sheet_row = row_num
         # Find the last row of inactive sheet
@@ -158,11 +166,13 @@ def inactive_member(file, attribute, attr_value):
         # Changing value for "status" column to "Inactive"
         inactive_sheet.cell(row=inactive_sheet_row, column=13, value="Inactive")
         # Formatting the cells
-        thin_border = Border(left=Side(style='thin'),
-                            right=Side(style='thin'),
-                            top=Side(style='thin'),
-                            bottom=Side(style='thin'))
-        alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
+        thin_border = Border(
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin"),
+        )
+        alignment = Alignment(horizontal="left", vertical="bottom", wrap_text=True)
         for cell in inactive_sheet[inactive_sheet_row]:
             cell.border = thin_border
             cell.alignment = alignment
@@ -170,37 +180,43 @@ def inactive_member(file, attribute, attr_value):
         active_sheet.delete_rows(idx=active_sheet_row)
         # Add date modified
         date = datetime.now()
-        active_sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
-                                               date.strftime("%H:%M"))
+        active_sheet["N2"] = "{} at {}".format(
+            date.strftime("%m/%d/%Y"), date.strftime("%H:%M")
+        )
         workbook.save(file)
         workbook.close()
         print("✅ {} successfully moved to Inactive Members.".format(member.first_name))
         # Send an automatic email when this completes
-        subject, body = generate_email("email-templates/inactive_member_template.txt",
-                                    member.email, file)
+        subject, body = generate_email(
+            "email-templates/inactive_member_template.txt", member.email, file
+        )
         send_email(member.email, subject, body)
     else:
         print("❌ Action cancelled.")
 
+
 def active_member(file, attribute, attr_value):
-    """Moves a member from the Inactive Member sheet to the Active Member 
+    """Moves a member from the Inactive Member sheet to the Active Member
     sheet. Takes the argument of a member attribute and value, and looks
-    up that member. Copies the member over from the Inactive sheet to the 
+    up that member. Copies the member over from the Inactive sheet to the
     Active sheet."""
     member = query_member_object(file, attribute, attr_value)[0]
     # Open the active sheet and append the member to the active sheet
-    check = input(f"Reinstate {member.first_name} {member.last_name} to Active Members? [y/n]\n")
+    check = input(
+        f"Reinstate {member.first_name} {member.last_name} to Active Members? [y/n]\n"
+    )
     if check == "y":
         workbook = load_workbook(file)
         inactive_sheet = workbook["Inactive Members"]
         active_sheet = workbook["Active Members"]
         # Find the row that matches the email attribute
         inactive_sheet_row = 0
-        for row_num, row in enumerate(inactive_sheet.iter_rows(min_row=2, 
-                                                               min_col=12, 
-                                                               max_col=12, 
-                                                               values_only=True), 
-                                                               start=2):
+        for row_num, row in enumerate(
+            inactive_sheet.iter_rows(
+                min_row=2, min_col=12, max_col=12, values_only=True
+            ),
+            start=2,
+        ):
             if member.email == row[0]:
                 inactive_sheet_row = row_num
         # Find the last row of inactive sheet
@@ -210,13 +226,15 @@ def active_member(file, attribute, attr_value):
             value = cell.value
             active_sheet.cell(row=active_sheet_row, column=col_num, value=value)
         # Changing "status" col value to "Active"
-        active_sheet.cell(row=active_sheet_row, column=13, value="Active")        
+        active_sheet.cell(row=active_sheet_row, column=13, value="Active")
         # Formatting the cells
-        thin_border = Border(left=Side(style='thin'),
-                            right=Side(style='thin'),
-                            top=Side(style='thin'),
-                            bottom=Side(style='thin'))
-        alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
+        thin_border = Border(
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin"),
+        )
+        alignment = Alignment(horizontal="left", vertical="bottom", wrap_text=True)
         for cell in active_sheet[active_sheet_row]:
             cell.border = thin_border
             cell.alignment = alignment
@@ -224,14 +242,16 @@ def active_member(file, attribute, attr_value):
         inactive_sheet.delete_rows(idx=inactive_sheet_row)
         # Add date modified
         date = datetime.now()
-        active_sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
-                                        date.strftime("%H:%M"))
+        active_sheet["N2"] = "{} at {}".format(
+            date.strftime("%m/%d/%Y"), date.strftime("%H:%M")
+        )
         workbook.save(file)
         workbook.close()
         print("✅ {} successfully moved to Active Members.".format(member.first_name))
         # Send an automatic email when this completes
-        subject, body = generate_email("email-templates/active_member_template.txt",
-                                    member.email, file)
+        subject, body = generate_email(
+            "email-templates/active_member_template.txt", member.email, file
+        )
         send_email(member.email, subject, body)
     else:
         print("❌ Action cancelled.")
