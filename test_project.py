@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, call
+from io import StringIO
 from datetime import datetime
 from classes import Member
 from openpyxl import load_workbook
@@ -7,13 +8,13 @@ from project import add_member, all_active_email, search_member, main
 
 class ProjectTest(unittest.TestCase):
 
-    # Patch decorators for input and internal functions, create_member_id() and
+    # Patch decorators for input, stdout, and internal functions: create_member_id() and
     # send_email()
-
+    @patch('sys.stdout', new_callable=StringIO)
     @patch('project.send_email')
     @patch('project.create_member_id', return_value='999')
     @patch('builtins.input', side_effect=['John', 'Doe', 'he/him', 'T1', 'Member', 'vopmembershiptest+jdoe@gmail.com', '1234567890', '123 Street', 'City', 'CA', '12345'])
-    def test_add_member(self, mock_input, mock_id, mock_send):
+    def test_add_member(self, mock_input, mock_id, mock_send, mock_stdout):
         # Call a test file to use as the spreadsheet
         file = "vopmembership_data_unittest.xlsx"
         expected_template = 'email-templates/new_member_template.txt'
@@ -65,6 +66,10 @@ VOP Membership team"""
         expected_date = '{} at {}'.format(date.strftime("%m/%d/%Y"), date.strftime("%H:%M"))
         self.assertEqual(sheet['N2'].value, expected_date)
 
+        # Check stdout to make sure the print statements are correct
+        expected_stdout = "Please enter the information for the new member.\n✅ John Doe successfully added to vopmembership_data_unittest.xlsx.\n"
+        self.assertEqual(mock_stdout.getvalue(), expected_stdout)
+        
         # Check if email functions work properly
         mock_generate.assert_called_with(expected_template, expected_email, file)
         mock_send.assert_called_once()
@@ -107,6 +112,7 @@ VOP Membership team"""
         # Assert that send_email was called as many times as there are emails
         self.assertEqual(mock_send.call_count, len(mock_query.return_value))
 
+    # Patch decorators for a mock print and query_member_object()
     @patch('builtins.print')
     @patch('project.query_member_object')
     def test_search_member(self, mock_query, mock_print):
@@ -151,6 +157,60 @@ VOP Membership team"""
                  'Status: Active')
         ]
         mock_print.assert_has_calls(expected_calls)
+    
+    # Patch decorators for mock_input and mock_stdout
+    @patch('sys.stdout', new_callable=StringIO)
+    @patch('builtins.input')
+    def test_main(self, mock_input, mock_stdout):
+        file = 'vopmembership_data_unittest.xlsx'
+
+        # Define mock_input to check that main menu works as expected
+        mock_input.side_effect= ['1', 'n', '7']
+        
+        # Call the main function
+        main(file)
+
+        # Check stdout for expected output
+        expected_stdout = "⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽\n"\
+                          "Welcome to the VOP Membership Portal!\n" \
+                          "What would you like to do?\n" \
+                          "1️⃣  Add new members\n" \
+                          "2️⃣  Remove members from Active Members\n" \
+                          "3️⃣  Reinstate members to Active Members\n" \
+                          "4️⃣  Update active members\n" \
+                          "5️⃣  Search for member information\n" \
+                          "6️⃣  Send an email to all active members\n" \
+                          "7️⃣  Exit\n" \
+                          "⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺\n" \
+                          "⬅️ Returning to Main Menu.\n" \
+                          "⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽\n"\
+                          "Welcome to the VOP Membership Portal!\n" \
+                          "What would you like to do?\n" \
+                          "1️⃣  Add new members\n" \
+                          "2️⃣  Remove members from Active Members\n" \
+                          "3️⃣  Reinstate members to Active Members\n" \
+                          "4️⃣  Update active members\n" \
+                          "5️⃣  Search for member information\n" \
+                          "6️⃣  Send an email to all active members\n" \
+                          "7️⃣  Exit\n" \
+                          "⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺\n" \
+                          "👋 Goodbye!\n"
+        self.assertEqual(mock_stdout.getvalue(), expected_stdout)
+
+        # Check for errors with bad files
+        bad_sheet_file = 'unittest_badsheet.xlsx' # No Inactive Members Sheet
+        with self.assertRaises(SystemExit) as bad_sheet:
+            main(bad_sheet_file)
+        # Assert the correct error code
+        self.assertEqual(bad_sheet.exception.code, 2)
+        bad_column_file = 'unittest_badcolumns.xlsx' # Wrong column names
+        with self.assertRaises(SystemExit) as bad_columns:
+            main(bad_column_file)
+        self.assertEqual(bad_columns.exception.code, 3)
+        bad_exists_file = 'nofile.xlsx' # Nonexistant file
+        with self.assertRaises(SystemExit) as bad_exists:
+            main(bad_exists_file)
+        self.assertEqual(bad_exists.exception.code, 1)
 
 
 if __name__ == '__main__':

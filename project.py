@@ -121,7 +121,7 @@ def main(file):
             except KeyError:
                 print(f"❌ {file} is not formatted correctly. Please ensure " \
                       "file includes a sheet titled 'Inactive Members'.")
-                sys.exit(1)
+                sys.exit(2)
             column_names = ["last name", "first name", "pronouns", "section", 
                     "member id", "role", "address", "city", "state", "zip", 
                     "phone", "email", "status", "date modified"]
@@ -130,11 +130,11 @@ def main(file):
                     print(f"❌ {file} is not formatted correctly. Please ensure the" \
                           " file has 14 columns, named:")
                     print(*column_names, sep="\n")
-                    sys.exit(1)
+                    sys.exit(3)
         except KeyError:
             print(f"❌ {file} is not formatted correctly. Please ensure file \
                   includes a sheet titled 'Active Members'.")
-            sys.exit(1)
+            sys.exit(4)
         workbook.close()
     else:
         print(f"❌ {file} does not exist.")
