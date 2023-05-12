@@ -1,13 +1,15 @@
 import unittest
 from unittest.mock import patch, call
 from datetime import datetime
+from classes import Member
 from openpyxl import load_workbook
-from project import add_member, all_active_email
+from project import add_member, all_active_email, search_member, main
 
 class ProjectTest(unittest.TestCase):
 
     # Patch decorators for input and internal functions, create_member_id() and
     # send_email()
+
     @patch('project.send_email')
     @patch('project.create_member_id', return_value='999')
     @patch('builtins.input', side_effect=['John', 'Doe', 'he/him', 'T1', 'Member', 'vopmembershiptest+jdoe@gmail.com', '1234567890', '123 Street', 'City', 'CA', '12345'])
@@ -105,7 +107,50 @@ VOP Membership team"""
         # Assert that send_email was called as many times as there are emails
         self.assertEqual(mock_send.call_count, len(mock_query.return_value))
 
+    @patch('builtins.print')
+    @patch('project.query_member_object')
+    def test_search_member(self, mock_query, mock_print):
+        file = "vopmembership_data_unittest.xlsx"
+        attribute = 'id'
+        attr_value = '1'
+        
+        # Set the return value for mock_query
+        mock_query.return_value = [Member(id='1', 
+                                          first_name='Johnson', 
+                                          last_name='White', 
+                                          pronouns='they/them', 
+                                          section='B1', 
+                                          role=None, 
+                                          email='vopmembershiptest+jwhite@gmail.com', 
+                                          address='10932 Bigge Rd', 
+                                          city='Menlo Park', 
+                                          state='CA', 
+                                          zip=94025, 
+                                          phone='408 496-7223', 
+                                          status='Active')]
+        
+        # Call the function
+        search_member(file, attribute, attr_value)
 
+        # Assert that the search is being called with expected values
+        mock_query.assert_has_calls([call(file, attribute, attr_value)])
+
+        # Assert that the printed output is correct
+        expected_calls = [
+            call("1 member(s) meet your search criteria."),
+            call("⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽"),
+            call("Result number 1:"),
+            call(' Name: Johnson White\n', 
+                 'Pronouns: they/them\n', 
+                 'Section: B1\n', 
+                 'Role: None\n', 
+                 'Member ID: 1\n', 
+                 'Email: vopmembershiptest+jwhite@gmail.com\n', 
+                 'Phone number: 408 496-7223\n', 
+                 'Address: 10932 Bigge Rd, Menlo Park CA 94025\n', 
+                 'Status: Active')
+        ]
+        mock_print.assert_has_calls(expected_calls)
 
 
 if __name__ == '__main__':
