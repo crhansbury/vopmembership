@@ -56,6 +56,7 @@ def add_member(file):
     sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
                                     date.strftime("%H:%M"))
     workbook.save(file)
+    workbook.close()
     print("✅ {} {} successfully added to {}.".format(first_name, last_name, file))
     # Generating and sending welcome email once new member has been successfully
     # appended to file
@@ -134,6 +135,7 @@ def main(file):
             print(f"❌ {file} is not formatted correctly. Please ensure file \
                   includes a sheet titled 'Active Members'.")
             sys.exit(1)
+        workbook.close()
     else:
         print(f"❌ {file} does not exist.")
         sys.exit(1)

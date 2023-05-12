@@ -1,13 +1,13 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, call
 from datetime import datetime
 from openpyxl import load_workbook
-from project import add_member
+from project import add_member, all_active_email
 
 class ProjectTest(unittest.TestCase):
-    file = "vopmembership_data_unittest.xlsx"
-    
-    # Creating patches for input and internal functions
+
+    # Patch decorators for input and internal functions, create_member_id() and
+    # send_email()
     @patch('project.send_email')
     @patch('project.create_member_id', return_value='999')
     @patch('builtins.input', side_effect=['John', 'Doe', 'he/him', 'T1', 'Member', 'vopmembershiptest+jdoe@gmail.com', '1234567890', '123 Street', 'City', 'CA', '12345'])
@@ -36,6 +36,7 @@ We look forward to seeing you at our first rehearsal!
 
 Best,
 VOP Membership team"""
+        # Setting up a mock generate_email() function
         with patch('project.generate_email') as mock_generate:
             mock_generate.return_value = (expected_subject, expected_body)
             add_member(file)
@@ -70,6 +71,42 @@ VOP Membership team"""
         # Clean up the test file
         sheet.delete_rows(idx=40)
         workbook.save(file)
+        workbook.close()
+
+    # Patch decorators for mock query_active_member, generate_email and 
+    # send_email functions
+    @patch('project.send_email')
+    @patch('project.generate_email')
+    @patch('project.query_active_member')
+    def test_all_active_email(self, mock_query, mock_generate, mock_send):
+        # Mocking the dependencies for testing
+        template = "email-templates/test_template.txt"
+        file = "vopmembership_data_unittest.xlsx"
+
+        # Define the list of emails to iterate over as the return value of query_active_members
+        mock_query.return_value = ['vopmembershiptest+test1@gmail.com', 
+                                   'vopmembershiptest+test2@gmail.com', 
+                                   'vopmembershiptest+test3@gmail.com']
+
+        # Set the side effect of mock_generate_email to return different values for each call
+        mock_generate.side_effect = lambda tmpl, email, fl: ('Test Subject', f'Test Body for {email}')
+
+        # Call the function
+        all_active_email(template, file)
+
+        # Assert that generate_email() was called with the expected emails and check the return values
+        calls = [call(template, email, file) for email in mock_query.return_value]
+        mock_generate.assert_has_calls(calls)
+        mock_generate.assert_called_with(template, mock_query.return_value[-1], file)
+
+        # Assert the number of generate_email() function calls
+        self.assertEqual(mock_generate.call_count, len(mock_query.return_value))
+
+        # Assert that send_email was called as many times as there are emails
+        self.assertEqual(mock_send.call_count, len(mock_query.return_value))
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

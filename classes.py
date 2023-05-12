@@ -47,6 +47,7 @@ def create_active_members(file):
                                phone=row[PHONE],
                                status=row[STATUS])
         active_members.append(active_member)
+        workbook.close()
     return active_members
 
 def create_inactive_members(file):
@@ -72,4 +73,5 @@ def create_inactive_members(file):
                                phone=row[PHONE],
                                status=row[STATUS])
         inactive_members.append(inactive_member)
+        workbook.close()
     return inactive_members

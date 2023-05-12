@@ -1,2 +1,3 @@
+Test Subject 
 
-This is a test email. If you are receiving this email, you are on the active members sheet.
+Test Body for {email}

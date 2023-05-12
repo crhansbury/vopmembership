@@ -125,6 +125,7 @@ def update_member(file, email):
             sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
                                             date.strftime("%H:%M"))
             workbook.save(file)
+            workbook.close()
             print(f"{member_first} {member_last} successfully edited.")
             subject, body = generate_email("email-templates/updated_member_template.txt",
                                            best_email, file)
@@ -172,6 +173,7 @@ def inactive_member(file, attribute, attr_value):
         active_sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
                                                date.strftime("%H:%M"))
         workbook.save(file)
+        workbook.close()
         print("✅ {} successfully moved to Inactive Members.".format(member.first_name))
         # Send an automatic email when this completes
         subject, body = generate_email("email-templates/inactive_member_template.txt",
@@ -225,6 +227,7 @@ def active_member(file, attribute, attr_value):
         active_sheet["N2"] = "{} at {}".format(date.strftime("%m/%d/%Y"),
                                         date.strftime("%H:%M"))
         workbook.save(file)
+        workbook.close()
         print("✅ {} successfully moved to Active Members.".format(member.first_name))
         # Send an automatic email when this completes
         subject, body = generate_email("email-templates/active_member_template.txt",

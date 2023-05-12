@@ -41,7 +41,7 @@ def send_email(reciever_email, subject, body):
     except:
         print(f"Email to {reciever_email} unsuccessful.")
     server.quit()
-    print("✅ Email successfully sent to {} with the subject: {}".format(reciever_email, subject))
+    print(f"✅ Email successfully sent to {reciever_email} with the subject: {subject}.")
 
 def generate_email(template, receiver_email, spreadsheet):
     """Returns two values: (subject, email_body). Fills in an existing template 

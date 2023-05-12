@@ -60,9 +60,9 @@ def query_member_object(file, attribute, attr_value):
             if matching_attr == attr_value:
                 member_list.append(member)
         except AttributeError:
-            print(f"'{attribute}' is not a valid attribute.")
+            print(f"❌ '{attribute}' is not a valid attribute.")
             sys.exit(15)
     if len(member_list) < 1:
-        print(f"No {attribute} found with the value {attr_value}.")
+        print(f"❌ No {attribute} found with the value {attr_value}.")
     else:
         return member_list
