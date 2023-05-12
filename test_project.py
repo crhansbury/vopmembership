@@ -16,7 +16,7 @@ class ProjectTest(unittest.TestCase):
     @patch('builtins.input', side_effect=['John', 'Doe', 'he/him', 'T1', 'Member', 'vopmembershiptest+jdoe@gmail.com', '1234567890', '123 Street', 'City', 'CA', '12345'])
     def test_add_member(self, mock_input, mock_id, mock_send, mock_stdout):
         # Call a test file to use as the spreadsheet
-        file = "vopmembership_data_unittest.xlsx"
+        file = "data-files/vopmembership_data_unittest.xlsx"
         expected_template = 'email-templates/new_member_template.txt'
         expected_email = 'vopmembershiptest+jdoe@gmail.com'
         expected_subject = 'Welcome to VOP, John!'
@@ -67,7 +67,7 @@ VOP Membership team"""
         self.assertEqual(sheet['N2'].value, expected_date)
 
         # Check stdout to make sure the print statements are correct
-        expected_stdout = "Please enter the information for the new member.\n✅ John Doe successfully added to vopmembership_data_unittest.xlsx.\n"
+        expected_stdout = "Please enter the information for the new member.\n✅ John Doe successfully added to data-files/vopmembership_data_unittest.xlsx.\n"
         self.assertEqual(mock_stdout.getvalue(), expected_stdout)
         
         # Check if email functions work properly
@@ -88,7 +88,7 @@ VOP Membership team"""
     def test_all_active_email(self, mock_query, mock_generate, mock_send):
         # Mocking the dependencies for testing
         template = "email-templates/test_template.txt"
-        file = "vopmembership_data_unittest.xlsx"
+        file = "data-files/vopmembership_data_unittest.xlsx"
 
         # Define the list of emails to iterate over as the return value of query_active_members
         mock_query.return_value = ['vopmembershiptest+test1@gmail.com', 
@@ -116,7 +116,7 @@ VOP Membership team"""
     @patch('builtins.print')
     @patch('project.query_member_object')
     def test_search_member(self, mock_query, mock_print):
-        file = "vopmembership_data_unittest.xlsx"
+        file = "data-files/vopmembership_data_unittest.xlsx"
         attribute = 'id'
         attr_value = '1'
         
@@ -162,7 +162,7 @@ VOP Membership team"""
     @patch('sys.stdout', new_callable=StringIO)
     @patch('builtins.input')
     def test_main(self, mock_input, mock_stdout):
-        file = 'vopmembership_data_unittest.xlsx'
+        file = 'data-files/vopmembership_data_unittest.xlsx'
 
         # Define mock_input to check that main menu works as expected
         mock_input.side_effect= ['1', 'n', '7']
@@ -171,39 +171,39 @@ VOP Membership team"""
         main(file)
 
         # Check stdout for expected output
-        expected_stdout = "⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽\n"\
-                          "Welcome to the VOP Membership Portal!\n" \
-                          "What would you like to do?\n" \
-                          "1️⃣  Add new members\n" \
-                          "2️⃣  Remove members from Active Members\n" \
-                          "3️⃣  Reinstate members to Active Members\n" \
-                          "4️⃣  Update active members\n" \
-                          "5️⃣  Search for member information\n" \
-                          "6️⃣  Send an email to all active members\n" \
-                          "7️⃣  Exit\n" \
-                          "⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺\n" \
-                          "⬅️ Returning to Main Menu.\n" \
-                          "⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽⎽\n"\
-                          "Welcome to the VOP Membership Portal!\n" \
-                          "What would you like to do?\n" \
-                          "1️⃣  Add new members\n" \
-                          "2️⃣  Remove members from Active Members\n" \
-                          "3️⃣  Reinstate members to Active Members\n" \
-                          "4️⃣  Update active members\n" \
-                          "5️⃣  Search for member information\n" \
-                          "6️⃣  Send an email to all active members\n" \
-                          "7️⃣  Exit\n" \
-                          "⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺\n" \
+        expected_stdout = "⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥\n"\
+                          "   Welcome to the VOP Membership Portal!\n" \
+                          "   What would you like to do?\n" \
+                          "🟥 [1] Add new members\n" \
+                          "🟧 [2] Remove members from Active Members\n" \
+                          "🟨 [3] Reinstate members to Active Members\n" \
+                          "🟩 [4] Update active members\n" \
+                          "🟦 [5] Search for member information\n" \
+                          "🟪 [6] Send an email to all active members\n" \
+                          "⬛️ [7] Exit\n" \
+                          "⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥\n" \
+                          "⬅️  Returning to Main Menu.\n" \
+                          "⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥\n"\
+                          "   Welcome to the VOP Membership Portal!\n" \
+                          "   What would you like to do?\n" \
+                          "🟥 [1] Add new members\n" \
+                          "🟧 [2] Remove members from Active Members\n" \
+                          "🟨 [3] Reinstate members to Active Members\n" \
+                          "🟩 [4] Update active members\n" \
+                          "🟦 [5] Search for member information\n" \
+                          "🟪 [6] Send an email to all active members\n" \
+                          "⬛️ [7] Exit\n" \
+                          "⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥⪥\n" \
                           "👋 Goodbye!\n"
         self.assertEqual(mock_stdout.getvalue(), expected_stdout)
 
         # Check for errors with bad files
-        bad_sheet_file = 'unittest_badsheet.xlsx' # No Inactive Members Sheet
+        bad_sheet_file = 'data-files/unittest_badsheet.xlsx' # No Inactive Members Sheet
         with self.assertRaises(SystemExit) as bad_sheet:
             main(bad_sheet_file)
         # Assert the correct error code
         self.assertEqual(bad_sheet.exception.code, 2)
-        bad_column_file = 'unittest_badcolumns.xlsx' # Wrong column names
+        bad_column_file = 'data-files/unittest_badcolumns.xlsx' # Wrong column names
         with self.assertRaises(SystemExit) as bad_columns:
             main(bad_column_file)
         self.assertEqual(bad_columns.exception.code, 3)

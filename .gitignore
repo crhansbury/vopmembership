@@ -2,11 +2,6 @@
 
 ignored_scripts/
 
-#Ignore various excel spreadsheet files being used to test the functions (may change later to allow for the final example xl spreadsheet)
-
-*.xlsx
-*.numbers
-
 # Ignore the cache file
 
 __pycache__

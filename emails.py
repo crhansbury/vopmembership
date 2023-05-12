@@ -4,17 +4,11 @@ import os
 import sys 
 from querymember import query_member_attr
 
-def mailing_list():
-    """Updates the mailing list for each email group. The email groups 
-    include section groups, role groups, and all singers."""
-    # Not sure about this function, might not use it.
-
 def send_email(reciever_email, subject, body):
     """Sends an email to the email defined in the 'reciever_email' parameter.
     Sends from vopmembershiptest@gmail.com. Password is defined in a local
     environment variable and cannot be retrieved outside of the test environment
     at this time."""
-    
     sender_email = "vopmembershiptest@gmail.com"
     password = os.environ.get("VOP_PASSWORD")
     
@@ -77,6 +71,7 @@ def generate_email(template, receiver_email, spreadsheet):
         new_section = mattr_string[3]
         if list[0].startswith(new_section[0]):
             section_leader.extend(list)
+    # Prevent an error if modifying the section leader's role attribute
     if len(section_leader) < 1:
         section_leader = ["None", "NO SECTION LEADER FOUND", " ", "NO EMAIL AVAILABLE"]
     # Open the email template and replace all variables with the correct info
@@ -98,6 +93,7 @@ def generate_email(template, receiver_email, spreadsheet):
             sys.exit(3)
         next(f)
         email_template = f.read()
+    # Appending the template text to fill in the values
     email_body = email_template.format(first_name=mattr_string[0],
                                         last_name=mattr_string[1],
                                         pronouns=mattr_string[2],

@@ -2,7 +2,7 @@ from classes import create_active_members, create_inactive_members
 import sys 
 
 def query_active_member(file, attribute):
-    """Searches the list of active Member objects for a certain attribute, 
+    """Searches the list of Active Member objects for a certain attribute, 
     returning a list of all the attribute values for that attribute."""
     active_members = create_active_members(file)
     member_list = []
@@ -13,7 +13,7 @@ def query_active_member(file, attribute):
     return member_list
 
 def query_inactive_member(file, attribute):
-    """Searches the list of inactive Member objects for a certain attribute, 
+    """Searches the list of Inactive Member objects for a certain attribute, 
     returning a list of all the attribute values for that attribute."""
     inactive_members = create_inactive_members(file)
     member_list = []
@@ -56,13 +56,16 @@ def query_member_object(file, attribute, attr_value):
     member_list = []
     for member in members:
         try:
+            # Finding the object with the attribute matching the search
             matching_attr = getattr(member, attribute)
             if matching_attr == attr_value:
                 member_list.append(member)
+        # Error handling for bad attribute entry
         except AttributeError:
             print(f"❌ '{attribute}' is not a valid attribute.")
             sys.exit(15)
     if len(member_list) < 1:
+        # Preventing function from returning an empty list
         print(f"❌ No {attribute} found with the value {attr_value}.")
     else:
         return member_list

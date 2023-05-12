@@ -28,7 +28,7 @@ def create_active_members(file):
     """Creates a list using the information from the spreadsheet
     of all active members. Returns a list of each member on the spreadsheet as 
     an instance of the Member dataclass, which includes all of the information
-    from the columns in the spreadsheet."""
+    from the columns in the spreadsheet as attributes."""
     workbook = load_workbook(filename=file)
     active_sheet = workbook["Active Members"]
     active_members = []
@@ -54,7 +54,7 @@ def create_inactive_members(file):
     """Creates a list using the information from the spreadsheet
     of all inactive members. Returns a list of each member on the spreadsheet as 
     an instance of the Member dataclass, which includes all of the information
-    from the columns in the spreadsheet."""
+    from the columns in the spreadsheet as attributes."""
     workbook = load_workbook(filename=file)
     inactive_sheet = workbook["Inactive Members"]
     inactive_members = []
