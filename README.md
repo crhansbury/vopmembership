@@ -9,7 +9,8 @@ VOP is a local choir whose membership has grown rapidly in the last few years, f
 
 Every semester there are ~20 new members who need to be entered into the system, assigned a member ID, and sent all the documents necessary for orientation. Additionally, there are ~10 current members who go on leave who need to be suspended from the database. Finally, every current member not on leave must review and update their member information as necessary at the start of each semester.
 
-This information will be used to populate important choir documents. For example: nametags for each member with name, section, and pronouns; email lists based on section and role; concert programs with name and section; and statistics collection for grant applications.
+UPDATE 5/12/2023: The ability to automatically create labels and documents has been removed from the current reach of the project due to time constraints. The program populates and sends emails automatically with each function, but does not at this time automatically make nametags or email lists.
+This information will be used to populate important choir documents. For example: nametags for each member with name, section, and pronouns; email lists based on section and role; concert programs with name and section; and statistics collection for grant applications.  
 
 ### Spreadsheet Structure
 
@@ -22,8 +23,9 @@ The data will be kept in an excel spreadsheet. This spreadsheet will have two sh
 * Email (ex: user@example.com)
 * Phone (ex: (215) 555-1234)
 * Address (ex: 123 Main St, Philadelphia PA 00000)
+* Status (ex: Active)
 
-The program will use `openpyxl` to collect and edit the information in this spreadsheet. Using the `Data Class`, the program will parse the information in the xl sheet and use it to populate a dictionary, which will allow the program to collect the information from the excel spreadsheet.
+The program will use `openpyxl` to collect and edit the information in this spreadsheet. Using the `Data Class`, the program will parse the information in the xl sheet and use it to make a list of objects in the Member class, which will allow the program to collect the information from the excel spreadsheet.
 
 The spreadsheet will also include a "date modified" field.
 
@@ -38,7 +40,7 @@ When a new member joins VOP, there is information that must be collected about t
 * Phone (ex: (215) 555-1234)
 * Address (ex: 123 Main St, Philadelphia PA 00000)
 
-The goal of this application is to make entering the information for each new member a quick and easy process by prompting the user for each of these fields and checking for the validity of each entry. A stretch goal for this application is to have this registration form sent out to each new member for them to fill out on their own.
+The goal of this application is to make entering the information for each new member a quick and easy process by prompting the user for each of these fields and formatting them for consistency. A stretch goal for this application is to have this registration form sent out to each new member for them to fill out on their own.
 
 ### Member ID
 
@@ -55,15 +57,23 @@ Each semester a certain number of members leave the choir temporarily or permane
 
 The goal of this application is to make the suspension of members going on leave simple by issuing one or two commands. This will be reflected in the spreadsheet by moving the Inactive Member from the Active Members sheet to the Inactive Members sheet, keeping the application from populating choir documents with suspended member information. This should make it easy to keep track of unique member IDs, as well as ease the transition back into active membership after going on leave for one or more semesters.
 
+The application will automatically send an email to the user when they have been moved either to or from the Active Members sheet.
+
 ### Member Information Change
 
 Personal information can change at any time, including address, name, pronouns, roles, and phone numbers. 
 
+UPDATE 5/12/2023: Nametag creation has been removed from the scope of this project due to time constraints. 
 The goal of this application is to make changing membership information easy with user prompting. The member should be automatically sent an email when information changes, as well as new documentation depending on the change (ex: new nametag if there is a name change).
 
 Additionally, an email should be sent to every current (not suspended) member at the beginning of each semester prompting each member to review their membership information and take action if there is out-of-date information. 
 
 ## Security
+
+UPDATE 5/12/2023: Password protecting the script has been moved from the scope of this project due to time constraints. 
+
+### Protecting PII
+When sending the emails, this script uses SMTP over TLS to encrypt the information in the emails as they contain sensitive PII (Personal Identifiable Information). Additionally, the password for the email address used to send the emails is hidden in an environment variable on the local machine to prevent this sensitive information from being posted on GitHub. Finally, the sample data in the spreadsheets used for development and posted on GitHub to not contain the information of any real people.
 
 There are many security concerns around having permission to add or modify information in the membership database. To start, the application should be locked behind a username and password to be held only by the memberhsip administrator of the choir. This basic security measure will help keep confidential information from being accessed by unauthorized users, and will keep anyone from changing the information in the database without permission.
 
@@ -76,13 +86,13 @@ A future goal of this application is to create a user account for each new membe
 * generate a member ID
 * output to a master spreadsheet of all members
     * 2 sheets: active members, inactive members
-* be able to edit members in existing db
+* be able to edit members in existing spreadsheet
 * email new member welcome packet
 * send out an email each semester prompting existing members for information updates
-* lock application behind a username and password
-
+* easily search the spreadsheet for the member information based on any criteria
 
 ### Future goals:
+* lock application behind a username and password (UPDATE 5/12/23)
 * print a nametag with name, section, and pronouns (UPDATE 5/10/23)
 * print a label sheet with member ID (UPDATE 5/10/23)
 * GUI front-end for user input
@@ -96,7 +106,25 @@ A future goal of this application is to create a user account for each new membe
 
 * project
     * `main()`
-        * Prompts user for input. Asks if user would like to enter a new member into the spreadsheet, change member information, make a member inactive, or query the spreadsheet for information.
+        * Prints out a main menu, asking if user would like to enter a new member
+        into the file, change member information, make a member active/inactive,
+        query the file for information, or send an email to all active members.
+        Performs these actions accordingly.
+    * `add_member()`
+        * Adds a member to the file. Takes criteria for:
+        name, pronouns, voice part, role, email address, phone number, and
+        mailing address. Appends file with this information. Generates a unique
+        member ID and assigns it to the new member. Enters status as 'Active'
+        automatically. Updates a field that indicates the date of the latest update.
+    * `search_member()`
+        * Searches the file for members that match the search criteria.
+        Prints all the information for the members who match the search.
+        Numbers all of the results. Uses the query_member_object() function to
+        search the file.
+    * `all_active_email()`
+        * Sends an email to every member in the Active Members sheet of the
+        spreadsheet passed into the 'file' parameter. Uses the email
+        template passed into the 'template' parameter.
 * classes
     * `create_active_members()`
         * Creates a list using the information from the spreadsheet of all active members. Returns a list of each member on the spreadsheet as an instance of the Member dataclass, which includes all of the information from the columns in the spreadsheet.
@@ -109,34 +137,65 @@ A future goal of this application is to create a user account for each new membe
         * Searches the list of inactive Member objects for a certain attribute, returning a list of all the attribute values for that attribute.
     * `query_member_attr()`
         * Looks for a specific attribute of a member, so one can search the file for someone's last name and return the other desired attribute. Example - query_member_attr('vopmembership_data.xlsx', first_name, 'Johnson', email) will return jwhite@domain.com. Takes four+ arguments - file name, the name of the attribute for the value being used to query the function, the value of the search, and as many return values as desired. Outputs a list of all the results that match the search, and each item of the list is a list of all the requested attributes for the individual Member instances.
+    * `query_member_object()`
+        * Queries the spreadsheet for a member object matching the specified
+        attribute and returns a list of the matching objects.
 * newmember
-    * `add_member()`
-        * Adds a member to the spreadsheet. Takes criteria for: name, pronouns, voice part, role, email address, phone number, and  mailing address. Appends spreadsheet with this information. Updates a field that indicates the date of the latest update.
     * `create_member_id()`
         * Creates a unique Member ID. Checks over every existing Member ID in spreadsheet (both active and inactive) and generates a new, sequential ID that does not already exist.
 * emails
     * `send_email()`
-        * Sends an email to a member in the spreadsheet. Planning to use for update confirmations, semesterly prompts for updates, new member welcome email.
-    * `new_member_email_template()`
-        * Fills in an existing template for a new member email with the new member's name, section, and section leader, creating a new file with the body of the email.
+        * Sends an email to the email defined in the 'reciever_email' parameter.
+        Sends from vopmembershiptest@gmail.com. Password is defined in a local
+        environment variable and cannot be retrieved outside of the test environment
+        at this time.
+    * `generate_email()`
+        * Returns two values: (subject, email_body). Fills in an existing template
+        for an email with all of the memeber's attributes, their Section Leader, and
+        the Section Leader's email.
+
+        The subject is defined in the template as the first line followed by an
+        empty line. The body includes the third line of the template to the end.
+
+        The variables in the template include all attributes of the member
+        associated with the 'receiver_email' parameter passed into the function as
+        defined in the spreadsheet file passed into the 'spreadsheet' parameter.
+        The variables must be written in the template as: {first_name}, {last_name},
+        {pronouns}, {section}, {id}, {email}, {phone}, {address}, {city}, {state},
+        {zipcode}. Other variables inclue the section, name, and email of the
+        Section Leader associated with the member's section. These variables must
+        be written in the template as: {sec_first}, {sec_last}, and {sec_email}.
 * updatemember
     * `update_member()`
         * Updates the member information in the spreadsheet. Prompts user for: name, pronouns, voice part, role, email address, phone number, or mailing address.
     * `inactive_member()`
-        * Moves a member from the Active Member sheet to the Inactive Member sheet.
+        * Moves a member from the Active Member sheet to the Inactive Member sheet.Takes the argument of a member attribute and value, and looks
+        up that member. Copies the member over from the Active sheet to the
+        Inactive sheet.
     * `active_member()`
-        * Moves a member from the Inactive Member sheet to the Active Member sheet.
-* material
-    * `label_sheet()`
-        * Creates a label sheet with the name and Member ID of a member.
-    * `name_tag()`
-        * Creates a nametag with the name, pronouns, and section of a member.
+        * Moves a member from the Inactive Member sheet to the Active Member
+        sheet. Takes the argument of a member attribute and value, and looks
+        up that member. Copies the member over from the Inactive sheet to the
+        Active sheet.
+* test_project
+    * `test_add_member()`
+        * Tests the functionality of `add_member` function. Checks that the input is appended correctly, that the date is appended correctly, that the print statements are correct, and that the email generated and sent are formatted correctly and sent to the right email.
+    * `test_all_active_email()`
+        * Tests the functionality of `all_active_email` function. Tests that the emails are generated correctly and sent to the right number of emails.
+    * `test_search_member()`
+        * Tests the functionality of `search_member` function. Checks that the output of the search finds the correct member and outputs it correctly to the screen. 
+    * `test_main()`
+        * Tests the functionality of `main`. Checks that the output is expected based on the input for the main menu. Also cheks the functions that check for bad files, running bad files in through the function and checking that the error codes match with the bad file.
 
 ### Modules and Libraries
 
 * `openpyxl`
 * `dataclass`
 * `datetime`
+* `sys`
+* `os`
+* `unittest`
+* `io`
 
 ## Sources
 
@@ -157,3 +216,7 @@ Grupetta, Stephen. "Using Python Optional Arguments When Defining Functions. htt
 "How to get current date and time in Python?" https://www.programiz.com/python-programming/datetime/current-datetime#:~:text=If%20we%20need%20to%20get,class%20of%20the%20datetime%20module.&text=Here%2C%20we%20have%20used%20datetime,and%20time%20in%20another%20format. 
 
 "Git Ignore and .gitignore". https://www.w3schools.com/git/git_ignore.asp?remote=github. 
+
+"mock patch in Python unittest library." https://www.youtube.com/watch?v=_OyuFg9pGQg 
+
+Ronquillo, Alex. "Understanding the Python Mock Object Library." https://realpython.com/python-mock-library/. 13 March 2019.
