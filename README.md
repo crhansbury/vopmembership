@@ -153,10 +153,8 @@ A future goal of this application is to create a user account for each new membe
         * Returns two values: (subject, email_body). Fills in an existing template
         for an email with all of the memeber's attributes, their Section Leader, and
         the Section Leader's email.
-
         The subject is defined in the template as the first line followed by an
         empty line. The body includes the third line of the template to the end.
-
         The variables in the template include all attributes of the member
         associated with the 'receiver_email' parameter passed into the function as
         defined in the spreadsheet file passed into the 'spreadsheet' parameter.
