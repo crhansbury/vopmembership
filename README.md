@@ -10,6 +10,7 @@ VOP is a local choir whose membership has grown rapidly in the last few years, f
 Every semester there are ~20 new members who need to be entered into the system, assigned a member ID, and sent all the documents necessary for orientation. Additionally, there are ~10 current members who go on leave who need to be suspended from the database. Finally, every current member not on leave must review and update their member information as necessary at the start of each semester.
 
 UPDATE 5/12/2023: The ability to automatically create labels and documents has been removed from the current reach of the project due to time constraints. The program populates and sends emails automatically with each function, but does not at this time automatically make nametags or email lists.
+
 This information will be used to populate important choir documents. For example: nametags for each member with name, section, and pronouns; email lists based on section and role; concert programs with name and section; and statistics collection for grant applications.  
 
 ### Spreadsheet Structure
@@ -64,6 +65,7 @@ The application will automatically send an email to the user when they have been
 Personal information can change at any time, including address, name, pronouns, roles, and phone numbers. 
 
 UPDATE 5/12/2023: Nametag creation has been removed from the scope of this project due to time constraints. 
+
 The goal of this application is to make changing membership information easy with user prompting. The member should be automatically sent an email when information changes, as well as new documentation depending on the change (ex: new nametag if there is a name change).
 
 Additionally, an email should be sent to every current (not suspended) member at the beginning of each semester prompting each member to review their membership information and take action if there is out-of-date information. 
