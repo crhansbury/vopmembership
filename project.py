@@ -304,6 +304,7 @@ def main(file):
                     if again == "y":
                         continue
                     else:
+                        print("⬅️  Returning to Main Menu.")
                         break
             else:
                 print("⬅️  Returning to Main Menu.")
@@ -399,6 +400,7 @@ def main(file):
                     if again.lower().strip() == "y":
                         continue
                     else:
+                        print("⬅️  Returning to Main Menu.")
                         break
             else:
                 print("⬅️  Returning to Main Menu.")
